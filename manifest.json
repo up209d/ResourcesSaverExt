@@ -1,0 +1,25 @@
+{
+	"name": "Save All Resources - UP",
+	"version": "0.0.1",
+	"description": "Save all resource files with retaining folder structure.",
+	"icons": {
+    "128": "icon.gif"
+	},
+	"browser_action": {
+    "default_icon": "icon.gif",
+		"default_title": "UP",
+		"default_popup": "popup.html"
+  },
+	"background": {
+		"scripts": [
+			"background.js"
+		]
+  },
+	"permissions": [
+		"tabs",
+		"downloads",
+		"downloads.shelf"
+	],
+	"devtools_page": "devtool.html",
+	"manifest_version": 2
+}
