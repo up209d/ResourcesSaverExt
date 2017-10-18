@@ -1,4 +1,4 @@
-# ResourcesSaverExt
+# Resources Saver Extension (Chrome)
 
 Chrome (v61) Extension for one click downloading all resources files and keeping folder structures.
 
