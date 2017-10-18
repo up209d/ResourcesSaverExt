@@ -1,7 +1,7 @@
 {
 	"name": "Save All Resources - UP",
 	"version": "0.0.1",
-	"description": "Save all resource files with retaining folder structure.",
+	"description": "Save all resources files with retaining folder structure.",
 	"icons": {
     "128": "icon.gif"
 	},
