@@ -69,11 +69,7 @@ function saveAllResources(e) {
 					}
 				}
 			}
-
-			//			toDownload.push({
-			//				url: 'http://'+domain+'/abc.icon.png'
-			//			})
-
+			
 			downloadListWithThread(toDownload, downloadThread, function () {
 				// Re-enable Download notification
 				chrome.downloads.setShelfEnabled(true);
@@ -119,37 +115,75 @@ function downloadURLs(urls, callback) {
 	urls.forEach(function (currentURL, index) {
 		console.log(currentURL);
 		var cUrl = currentURL.url;
-		var filename = currentURL.url.substring(currentURL.url.lastIndexOf('/') + 1);
 		var filepath = currentURL.url.split('://')[1].split('?')[0];
-		if (filepath.charAt(filepath.length - 1) === '/') {
-			filepath = filepath + 'index.html';
+//		if (filepath.charAt(filepath.length - 1) === '/') {
+//			filepath = filepath + 'index.html';
+//		}
+		
+		var filename = filepath.substring(filepath.lastIndexOf('/') + 1);
+		
+		if (filename.search(/\./) === -1) {
+			filepath = filepath + '.html';
 		}
-
+		
+		console.log(filename);
+		
 		currentDownloadQueue.push({
 			index: index,
 			url: cUrl,
 			resolved: false
-		})
+		});
+		
+		if (document.getElementById('check-cache').checked) {
+			currentURL.getContent(function (content, encoding) {
+				var currentEnconding = encoding;
+				if (filename.search(/\.(png|jpg|jpeg|gif|ico|svg)/) !== -1) {
+					currentEnconding = 'base64';
+				}
+				chrome.downloads.download({
+						url: 'data:text/plain;' + currentEnconding + ',' + content, //currentURL.url
+						filename: 'All Resources/' + filepath,
+						saveAs: false
+					},
+					function (downloadId) {
+						var currentIndex = currentDownloadQueue.findIndex(function (item) {
+							return item.index === index
+						});
+						currentDownloadQueue[currentIndex].id = downloadId;
+						currentDownloadQueue[currentIndex].order = currentIndex;
+						//console.log('Create: ', JSON.stringify(currentDownloadQueue));
+						//console.log(currentDownloadQueue);
+						chrome.downloads.search({
+							id: downloadId
+						}, function (item) {
+							//console.log(item[0].state);
+						})
+					}
+				);
+			});
+		} else {
+			chrome.downloads.download({
+					url: currentURL.url,
+					filename: 'All Resources/' + filepath,
+					saveAs: false
+				},
+				function (downloadId) {
+					var currentIndex = currentDownloadQueue.findIndex(function (item) {
+						return item.index === index
+					});
+					currentDownloadQueue[currentIndex].id = downloadId;
+					currentDownloadQueue[currentIndex].order = currentIndex;
+					//console.log('Create: ', JSON.stringify(currentDownloadQueue));
+					//console.log(currentDownloadQueue);
+					chrome.downloads.search({
+						id: downloadId
+					}, function (item) {
+						//console.log(item[0].state);
+					})
+				}
+			);
+		}
 
-		chrome.downloads.download({
-				url: currentURL.url,
-				filename: 'All Resources/' + filepath,
-				saveAs: false
-			},
-			function (downloadId) {
-				var currentIndex = currentDownloadQueue.findIndex(function (item) {
-					return item.index === index
-				});
-				currentDownloadQueue[currentIndex].id = downloadId;
-				//console.log('Create: ', JSON.stringify(currentDownloadQueue));
-				//console.log(currentDownloadQueue);
-				chrome.downloads.search({
-					id: downloadId
-				}, function (item) {
-					//console.log(item[0].state);
-				})
-			}
-		);
 	});
 
 	chrome.downloads.onChanged.addListener(function (downloadItem) {
@@ -165,9 +199,10 @@ function downloadURLs(urls, callback) {
 					chrome.downloads.erase({
 						id: downloadItem.id
 					}, function () {
+						var newListUrl = currentDownloadQueue.find(function(item){ return item.id === downloadItem.id}).url;
 						var newList = document.createElement('ul');
 						newList.className = 'each-done';
-						newList.innerHTML = '<li>' + item[0].id + '</li><li class="success">Success</li><li>' + item[0].url + '</li>';
+						newList.innerHTML = '<li>' + item[0].id + '</li><li class="success">Success</li><li>' + newListUrl + '</li>';
 						document.getElementById('debug').insertBefore(newList, document.getElementById('debug').childNodes[0]);
 						currentDownloadQueue[index].resolved = true;
 						var count = currentDownloadQueue.filter(function (item) {
