@@ -1,6 +1,6 @@
 {
 	"name": "Save All Resources",
-	"version": "0.0.2",
+	"version": "0.0.4",
 	"description": "UP - Save all resources files with retaining folder structure.",
 	"icons": {
     "128": "icon.gif"
@@ -17,6 +17,8 @@
   },
 	"permissions": [
 		"tabs",
+		"http://*/",
+    "https://*/",
 		"downloads",
 		"downloads.shelf"
 	],

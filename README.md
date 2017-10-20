@@ -8,7 +8,9 @@ Extension can be found here:
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
 
-- 0.0.3: Bug Fixes
+- 0.0.4: Including download for assests by XHR requests.
+
+- 0.0.3: Bug Fixes.
 
 - 0.0.2: Extension now re-fetchs resource contents from browser-cache in order to improve speed & stability.
 
