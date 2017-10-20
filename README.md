@@ -16,6 +16,6 @@ https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablah
 
 ![alt text](https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot.png?raw=true)
 
-Output Result with same folder structures as online sources:
+Output results with same structure as online sources:
 
 ![alt text](https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot2.png?raw=true)
