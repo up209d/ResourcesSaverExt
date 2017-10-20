@@ -116,9 +116,9 @@ function downloadURLs(urls, callback) {
 		console.log(currentURL);
 		var cUrl = currentURL.url;
 		var filepath = currentURL.url.split('://')[1].split('?')[0];
-//		if (filepath.charAt(filepath.length - 1) === '/') {
-//			filepath = filepath + 'index.html';
-//		}
+		if (filepath.charAt(filepath.length - 1) === '/') {
+			filepath = filepath + 'index.html';
+		}
 		
 		var filename = filepath.substring(filepath.lastIndexOf('/') + 1);
 		
