@@ -3,7 +3,7 @@
 ### Chrome Extension for one click downloading all resources files and keeping folder structures.
 
 Extension can be found here:
-https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
+```https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US```
 
 - 0.0.2: Extension now re-fetchs resource contents from browser-cache in order to improve speed & stability.
 
