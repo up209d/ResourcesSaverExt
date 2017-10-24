@@ -7,6 +7,7 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
+- 0.0.5: Improve stabitility. Bug fixes.
 
 - 0.0.4: Including download for assests by XHR requests.
 
