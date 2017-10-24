@@ -1,5 +1,28 @@
 console.log('Hello from -> Content');
 
+// Communication between tab and extension
+// Inject a message sending from an active tab
+//setTimeout(function(){
+//	chrome.tabs.executeScript(chrome.devtools.inspectedWindow.tabId, {
+//		code: 'window.addEventListener("load", function(){chrome.runtime.sendMessage({type: "RELOADED"})}, false);'
+//	});
+//},3000);
+
+// Communication between tab and extension
+// Function when this extension get an message event and react that
+//chrome.runtime.onMessage.addListener(
+//	function(request, sender, sendResponse) {
+//		//	console.log(request.type,sender.tab.id,chrome.devtools.inspectedWindow.tabId)
+//		if (request.type === 'RELOADED' && sender.tab.id === chrome.devtools.inspectedWindow.tabId) {
+//			document.getElementById('check-xhr').checked = true;
+//			document.getElementById('check-xhr').disabled = false;
+//			document.getElementById('label-xhr').innerHTML = 'Include all assets by XHR requests'
+//			document.getElementById('up-save').innerHTML = 'Save All Resources';
+//			document.getElementById('up-save').disabled = false;
+//		}
+//	}
+//);
+
 document.addEventListener('DOMContentLoaded', function () {
 	
 //	chrome.devtools.network.getHAR(function(logInfo){
@@ -15,36 +38,20 @@ document.addEventListener('DOMContentLoaded', function () {
 			document.getElementById('label-xhr').innerHTML = 'Reloading page for collecting XHR requests ...'; //Include all assets by XHR requests
 			document.getElementById('up-save').innerHTML = 'Waiting for reload';
 			document.getElementById('up-save').disabled = true;
+			// Add listener, only when the check box is from unchecked to checked
+			chrome.tabs.onUpdated.addListener(tabCompleteHandler);
 			chrome.tabs.reload(chrome.devtools.inspectedWindow.tabId,null,function(){
-				setTimeout(function(){
-					chrome.tabs.executeScript(chrome.devtools.inspectedWindow.tabId, {
-						code: 'window.onload=function(){chrome.runtime.sendMessage({type: "RELOADED"})}'
-					});
-				},1000);
 				e.target.disabled = true;
 			});
 		} else {
 			e.target.checked = false;
 		}
 	});
-	
-	chrome.runtime.onMessage.addListener(
-		function(request, sender, sendResponse) {
-			//	console.log(request.type,sender.tab.id,chrome.devtools.inspectedWindow.tabId)
-			if (request.type === 'RELOADED' && sender.tab.id === chrome.devtools.inspectedWindow.tabId) {
-				document.getElementById('check-xhr').checked = true;
-				document.getElementById('check-xhr').disabled = false;
-				document.getElementById('label-xhr').innerHTML = 'Include all assets by XHR requests'
-				document.getElementById('up-save').innerHTML = 'Save All Resources';
-				document.getElementById('up-save').disabled = false;
-			}
-		}
-	);
 
 	chrome.devtools.inspectedWindow.getResources(function (resources) {
-		document.getElementById('status').innerHTML = 'Resources count: ' + resources.length;
+		document.getElementById('status').innerHTML = 'Static resources count: ' + resources.length;
 	})
-
+	
 	//This can be used for identifying when ever a download is done (state from in_processing to complete)
 	//	chrome.downloads.onChanged.addListener(function(downloadItem){
 	//		console.log('Download Updated': downloadItem);
@@ -71,6 +78,17 @@ document.addEventListener('DOMContentLoaded', function () {
 	
 });
 
+function tabCompleteHandler(tabId,changeInfo) {
+	if (tabId === chrome.devtools.inspectedWindow.tabId && changeInfo.status === 'complete') {
+		document.getElementById('check-xhr').checked = true;
+		document.getElementById('check-xhr').disabled = false;
+		document.getElementById('label-xhr').innerHTML = 'Include all assets by XHR requests (require page reload).'
+		document.getElementById('up-save').innerHTML = 'Save All Resources';
+		document.getElementById('up-save').disabled = false;
+		// Remove listener from further same event
+		chrome.tabs.onUpdated.removeListener(tabCompleteHandler);
+	}
+}
 
 
 function saveAllResources(e) {
