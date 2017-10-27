@@ -196,18 +196,26 @@ function downloadURLs(urls, callback) {
 	urls.forEach(function (currentURL, index) {
 		console.log(currentURL);
 		var cUrl = currentURL.url;
-		var filepath = currentURL.url.split('://')[1].split('?')[0];
-		if (filepath.charAt(filepath.length - 1) === '/') {
-			filepath = filepath + 'index.html';
-		}
-		
-		var filename = filepath.substring(filepath.lastIndexOf('/') + 1);
-		
-		if (filename.search(/\./) === -1) {
-			filepath = filepath + '.html';
-		}
-		
-		console.log(filename);
+        var filepath,filename;
+        
+        if (cUrl.search(/\:\/\//) === -1) {
+          console.log('DATA URL');
+          filename = 'file.' + Math.random().toString(16) + '.txt';
+          filepath = 'dataURI/' + filename;
+        } else {
+          filepath = currentURL.url.split('://')[1].split('?')[0];
+          if (filepath.charAt(filepath.length - 1) === '/') {
+            filepath = filepath + 'index.html';
+          }
+          filename = filepath.substring(filepath.lastIndexOf('/') + 1);
+          if (filename.search(/\./) === -1) {
+            filepath = filepath + '.html';
+          }
+        }
+      
+        filepath = filepath.replace(/\:|\\|\/\/|\=/g,'');
+        
+		console.log(filepath);
 		
 		currentDownloadQueue.push({
 			index: index,
