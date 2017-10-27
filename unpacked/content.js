@@ -221,24 +221,41 @@ function downloadURLs(urls, callback) {
 				if (filename.search(/\.(png|jpg|jpeg|gif|ico|svg)/) !== -1) {
 					currentEnconding = 'base64';
 				}
+				
+				var currentContent = currentEnconding ? content : (function(){
+					try {
+						return btoa(content);
+					} catch(err) {
+						console.log('utoa fallback: ',currentURL.url);
+						return btoa(unescape(encodeURIComponent(content)));
+					}
+				})(); //btoa(unescape(encodeURIComponent(content)))
+				
+				var finalURI = 'data:text/plain;base64,' + currentContent;
+				
 				chrome.downloads.download({
-						url: 'data:text/plain;' + currentEnconding + ',' + content, //currentURL.url
+						url: finalURI, //currentURL.url
 						filename: 'All Resources/' + filepath,
 						saveAs: false
 					},
 					function (downloadId) {
-						var currentIndex = currentDownloadQueue.findIndex(function (item) {
-							return item.index === index
-						});
-						currentDownloadQueue[currentIndex].id = downloadId;
-						currentDownloadQueue[currentIndex].order = currentIndex;
-						//console.log('Create: ', JSON.stringify(currentDownloadQueue));
-						//console.log(currentDownloadQueue);
-						chrome.downloads.search({
-							id: downloadId
-						}, function (item) {
-							//console.log(item[0].state);
-						})
+						
+						if (chrome.runtime.lastError) {
+							console.log('ERR: ',chrome.runtime.lastError,finalURI);
+						} else {
+							var currentIndex = currentDownloadQueue.findIndex(function (item) {
+								return item.index === index
+							});
+							currentDownloadQueue[currentIndex].id = downloadId;
+							currentDownloadQueue[currentIndex].order = currentIndex;
+							//console.log('Create: ', JSON.stringify(currentDownloadQueue));
+							//console.log(currentDownloadQueue);
+							chrome.downloads.search({
+								id: downloadId
+							}, function (item) {
+								//console.log(item[0].state);
+							})
+						}
 					}
 				);
 			});
