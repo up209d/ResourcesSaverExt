@@ -24,14 +24,14 @@ console.log('Hello from -> Content');
 //);
 
 document.addEventListener('DOMContentLoaded', function () {
-	
-//	chrome.devtools.network.getHAR(function(logInfo){
-//			console.log(logInfo);
-//		});
+
+	//	chrome.devtools.network.getHAR(function(logInfo){
+	//			console.log(logInfo);
+	//		});
 
 	document.getElementById('up-save').addEventListener('click', saveAllResources);
-	
-	document.getElementById('check-xhr').addEventListener('change',function(e){
+
+	document.getElementById('check-xhr').addEventListener('change', function (e) {
 		e.target.checked = !e.target.checked;
 		if (!e.target.checked) {
 			e.target.checked = false;
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			document.getElementById('up-save').disabled = true;
 			// Add listener, only when the check box is from unchecked to checked
 			chrome.tabs.onUpdated.addListener(tabCompleteHandler);
-			chrome.tabs.reload(chrome.devtools.inspectedWindow.tabId,null,function(){
+			chrome.tabs.reload(chrome.devtools.inspectedWindow.tabId, null, function () {
 				e.target.disabled = true;
 			});
 		} else {
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	chrome.devtools.inspectedWindow.getResources(function (resources) {
 		document.getElementById('status').innerHTML = 'Static resources count: ' + resources.length;
 	})
-	
+
 	//This can be used for identifying when ever a download is done (state from in_processing to complete)
 	//	chrome.downloads.onChanged.addListener(function(downloadItem){
 	//		console.log('Download Updated': downloadItem);
@@ -74,11 +74,11 @@ document.addEventListener('DOMContentLoaded', function () {
 		// alert("New Resource  Object is " + resource);
 		console.log('Resource commited: ', resource.url);
 	});
-	
-	
+
+
 });
 
-function tabCompleteHandler(tabId,changeInfo) {
+function tabCompleteHandler(tabId, changeInfo) {
 	if (tabId === chrome.devtools.inspectedWindow.tabId && changeInfo.status === 'complete') {
 		document.getElementById('check-xhr').checked = true;
 		document.getElementById('check-xhr').disabled = false;
@@ -95,16 +95,16 @@ function saveAllResources(e) {
 
 	var toDownload = [];
 	var downloadThread = 5;
-	
+
 	var xhrResources = [];
 	if (document.getElementById('check-xhr').checked) {
-		chrome.devtools.network.getHAR(function(logInfo){
-			logInfo.entries.map(function(entry){
+		chrome.devtools.network.getHAR(function (logInfo) {
+			logInfo.entries.map(function (entry) {
 				xhrResources.push(entry.request);
 			})
 		});
 	}
-	
+
 	// Disable download notification
 	chrome.downloads.setShelfEnabled(false);
 
@@ -112,7 +112,7 @@ function saveAllResources(e) {
 		console.log('Save content from: ', tab.url);
 		var domain = tab.url.split('://')[1].substring(0, tab.url.split('://')[1].indexOf('/'));
 		//Fetching all available resources and filtering using name of script snippet added 
-		chrome.devtools.inspectedWindow.getResources(function(resources) {
+		chrome.devtools.inspectedWindow.getResources(function (resources) {
 			//		resources.map(function (item) {
 			//			console.log(item);
 			//		})
@@ -122,14 +122,16 @@ function saveAllResources(e) {
 			// Disable button
 			e.target.innerHTML = 'Starting Download';
 			e.target.disabled = true;
-			
+
 			var combineResources = xhrResources.concat(resources);
-			
+
 			if (document.getElementById('check-all').checked) {
 				for (i = 0; i < combineResources.length; i++) {
 					if (combineResources[i].url.search(/^(http|https)/) !== -1) {
 						// Make sure unique URL
-						if (toDownload.findIndex(function(item){return item.url === combineResources[i].url}) === -1) {
+						if (toDownload.findIndex(function (item) {
+								return item.url === combineResources[i].url
+							}) === -1) {
 							toDownload.push(combineResources[i]);
 						}
 					}
@@ -139,15 +141,17 @@ function saveAllResources(e) {
 					// Matching with current snippet URL
 					if (combineResources[i].url.indexOf('://' + domain) >= 0) {
 						// Make sure unique URL
-						if (toDownload.findIndex(function(item){return item.url === combineResources[i].url}) === -1) {
+						if (toDownload.findIndex(function (item) {
+								return item.url === combineResources[i].url
+							}) === -1) {
 							toDownload.push(combineResources[i]);
 						}
 					}
 				}
 			}
-			
+
 			console.log(toDownload)
-			
+
 			downloadListWithThread(toDownload, downloadThread, function () {
 				allDone();
 			});
@@ -196,60 +200,60 @@ function downloadURLs(urls, callback) {
 	urls.forEach(function (currentURL, index) {
 		console.log(currentURL);
 		var cUrl = currentURL.url;
-        var filepath,filename;
-        
-        if (cUrl.search(/\:\/\//) === -1) {
-          console.log('DATA URL');
-          filename = 'file.' + Math.random().toString(16) + '.txt';
-          filepath = 'dataURI/' + filename;
-        } else {
-          filepath = currentURL.url.split('://')[1].split('?')[0];
-          if (filepath.charAt(filepath.length - 1) === '/') {
-            filepath = filepath + 'index.html';
-          }
-          filename = filepath.substring(filepath.lastIndexOf('/') + 1);
-          if (filename.search(/\./) === -1) {
-            filepath = filepath + '.html';
-          }
-        }
-      
-        filepath = filepath.replace(/\:|\\|\/\/|\=/g,'');
-        
+		var filepath, filename;
+
+		if (cUrl.search(/\:\/\//) === -1) {
+			console.log('DATA URL');
+			filename = 'file.' + Math.random().toString(16) + '.txt';
+			filepath = 'dataURI/' + filename;
+		} else {
+			filepath = currentURL.url.split('://')[1].split('?')[0];
+			if (filepath.charAt(filepath.length - 1) === '/') {
+				filepath = filepath + 'index.html';
+			}
+			filename = filepath.substring(filepath.lastIndexOf('/') + 1);
+			if (filename.search(/\./) === -1) {
+				filepath = filepath + '.html';
+			}
+		}
+
+		filepath = filepath.replace(/\:|\\|\/\/|\=|\*|\.$|\"|\'|\?|\~|\||\<|\>/g, '');
+
 		console.log(filepath);
-		
+
 		currentDownloadQueue.push({
 			index: index,
 			url: cUrl,
 			resolved: false
 		});
-		
+
 		if (document.getElementById('check-cache').checked && currentURL.getContent) {
 			currentURL.getContent(function (content, encoding) {
 				var currentEnconding = encoding;
 				if (filename.search(/\.(png|jpg|jpeg|gif|ico|svg)/) !== -1) {
 					currentEnconding = 'base64';
 				}
-				
-				var currentContent = currentEnconding ? content : (function(){
+
+				var currentContent = currentEnconding ? content : (function () {
 					try {
 						return btoa(content);
-					} catch(err) {
-						console.log('utoa fallback: ',currentURL.url);
+					} catch (err) {
+						console.log('utoa fallback: ', currentURL.url);
 						return btoa(unescape(encodeURIComponent(content)));
 					}
 				})(); //btoa(unescape(encodeURIComponent(content)))
-				
+
 				var finalURI = 'data:text/plain;base64,' + currentContent;
-				
+
 				chrome.downloads.download({
 						url: finalURI, //currentURL.url
 						filename: 'All Resources/' + filepath,
 						saveAs: false
 					},
 					function (downloadId) {
-						
 						if (chrome.runtime.lastError) {
-							console.log('ERR: ',chrome.runtime.lastError,finalURI);
+							console.log('URI ERR: ', chrome.runtime.lastError,filepath, finalURI);
+							document.getElementById('status').innerHTML = 'Files to download: ERR occured';
 						} else {
 							var currentIndex = currentDownloadQueue.findIndex(function (item) {
 								return item.index === index
@@ -274,18 +278,23 @@ function downloadURLs(urls, callback) {
 					saveAs: false
 				},
 				function (downloadId) {
-					var currentIndex = currentDownloadQueue.findIndex(function (item) {
-						return item.index === index
-					});
-					currentDownloadQueue[currentIndex].id = downloadId;
-					currentDownloadQueue[currentIndex].order = currentIndex;
-					//console.log('Create: ', JSON.stringify(currentDownloadQueue));
-					//console.log(currentDownloadQueue);
-					chrome.downloads.search({
-						id: downloadId
-					}, function (item) {
-						//console.log(item[0].state);
-					})
+					if (chrome.runtime.lastError) {
+								console.log('URL ERR: ', chrome.runtime.lastError,filepath, finalURI);
+								document.getElementById('status').innerHTML = 'Files to download: ERR occured';
+							} else { 
+								var currentIndex = currentDownloadQueue.findIndex(function (item) {
+									return item.index === index
+								});
+								currentDownloadQueue[currentIndex].id = downloadId;
+								currentDownloadQueue[currentIndex].order = currentIndex;
+								//console.log('Create: ', JSON.stringify(currentDownloadQueue));
+								//console.log(currentDownloadQueue);
+								chrome.downloads.search({
+									id: downloadId
+								}, function (item) {
+									//console.log(item[0].state);
+								})
+							}
 				}
 			);
 		}
@@ -305,7 +314,9 @@ function downloadURLs(urls, callback) {
 					chrome.downloads.erase({
 						id: downloadItem.id
 					}, function () {
-						var newListUrl = currentDownloadQueue.find(function(item){ return item.id === downloadItem.id}).url;
+						var newListUrl = currentDownloadQueue.find(function (item) {
+							return item.id === downloadItem.id
+						}).url;
 						var newList = document.createElement('ul');
 						newList.className = 'each-done';
 						newList.innerHTML = '<li>' + item[0].id + '</li><li class="success">Success</li><li>' + newListUrl + '</li>';
