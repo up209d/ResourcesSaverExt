@@ -7,6 +7,8 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
+- 0.0.8: Continue download on chrome runtime error, bug fixes, violating path fixes.
+
 - 0.0.7: Violating path fixes.
 
 - 0.0.6: Bug fixes.

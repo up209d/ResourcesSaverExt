@@ -1,4 +1,4 @@
-console.log('Hello from -> Devtool');
+//console.log('Hello from -> Devtool');
 chrome.devtools.panels.create(
 	"ResourcesSaver",
 	"icon.gif",
