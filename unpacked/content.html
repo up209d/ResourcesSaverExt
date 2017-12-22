@@ -11,6 +11,7 @@
     	<button id="up-save">Save All Resources</button>
 		</h1>
 		<ul id="options">
+			<li id="option-zip"><input id="check-zip" type="checkbox" checked/> <label id="label-zip" for="check-zip">Compress all assets & download at once <B>(Recommended)</B></label></li>
     	<li id="option-all"><input id="check-all" type="checkbox"/> <label for="check-all">Download from all domains in current resources.</label></li>
 			<li id="option-cache"><input id="check-cache" type="checkbox" checked/> <label for="check-cache">Save resource contents from system cache.</label></li>
 			<li id="option-xhr"><input id="check-xhr" type="checkbox"/> <label id="label-xhr" for="check-xhr">Include all assets by XHR requests (require page reload).</label></li>
@@ -18,6 +19,7 @@
 		<p id="status"></p>
 		<div id="debug"></div>
 	</div>
+	<script src="zip/zip.js"></script>
 	<script src="content.js"></script>
 </body>
 </html>
