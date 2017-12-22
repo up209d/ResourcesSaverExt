@@ -370,6 +370,9 @@ function downloadURLs(urls, callback) {
 }
 
 function downloadZipFile(toDownload, callback) {
+  // No need to hide download for only one zip file
+  chrome.downloads.setShelfEnabled = true;
+  
   if (zip) {
     zip.workerScriptsPath = "zip/";
     getAllToDownloadContent(toDownload, function (result) {
@@ -398,15 +401,13 @@ function getAllToDownloadContent(toDownload, callback) {
         var filename = resolvedItem.name;
         var currentEnconding = encode || null;
 
-        if (filename.search(/\.(png|jpg|jpeg|gif|ico)/) !== -1) {
+        if (filename.search(/\.(png|jpg|jpeg|gif|ico|svg)/) !== -1) {
           currentEnconding = 'base64';
         }
 
         var foundIndex = result.findIndex(function (currentItem) {
           return currentItem.url === newURL;
         });
-
-
 
         if (foundIndex === -1) {
           result.push({
@@ -431,7 +432,16 @@ function addItemsToZipWriter(blobWriter, items, callback) {
   let item = items[0];
   let rest = items.slice(1);
   if (item) {
-    let resolvedContent = (item.encoding === 'base64') ? new zip.Data64URIReader(item.content || '') : new zip.TextReader(item.content || ' ');
+    if (item.encoding === 'base64') {
+      // Try to decode first
+      try {
+        var tryAtob = atob(item.content);
+      } catch (err) {
+        console.log('Not Base64 fallback to text');
+        item.encoding = null;
+      }
+    }
+    var resolvedContent = (item.encoding === 'base64') ? new zip.Data64URIReader(item.content || '') : new zip.TextReader(item.content || ' ');
     
     document.getElementById('status').innerHTML = 'Compressing: ' + item.url;
     var newList = document.createElement('ul');
