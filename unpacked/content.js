@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   });
 
+  ZipFile.create();
+
   document.getElementById('up-save').addEventListener('click', saveAllResources);
 
   document.getElementById('check-xhr').addEventListener('change', function (e) {
@@ -133,14 +135,17 @@ function saveAllResources(e) {
       console.log('Download List: ', toDownload)
 
       downloadListWithThread(toDownload, downloadThread, function () {
-        allDone();
+        allDone(domain);
       });
 
     });
   })
 }
 
-function allDone() {
+var fileziplist = [];// files which need zip
+function allDone(domain) {
+  // start download
+  ZipFile.add(fileziplist, domain);
   // Re-enable Download notification
   chrome.downloads.setShelfEnabled(true);
 
@@ -166,17 +171,18 @@ function downloadListWithThread(toDownload, threadCount, callback) {
   document.getElementById('status').innerHTML = 'Files to download: ' + toDownload.length;
   var currentList = toDownload.slice(0, threadCount);
   var restList = toDownload.slice(threadCount);
-  downloadURLs(currentList, function () {
-    if (currentList.length > 0 && restList.length > 0) {
-      downloadListWithThread(restList, threadCount, callback);
-    } else {
+  downloadURLs(toDownload, function () {
+    // if (currentList.length > 0 && restList.length > 0) {
+    //   downloadListWithThread(restList, threadCount, callback);
+    // } else {
       callback();
-    }
+    // }
   });
 }
 
 function downloadURLs(urls, callback) {
   var currentDownloadQueue = [];
+  let count = 1;
   urls.forEach(function (currentURL, index) {
     console.log('Current request: ', currentURL);
     var cUrl = currentURL.url;
@@ -228,33 +234,35 @@ function downloadURLs(urls, callback) {
 
         var finalURI = 'data:text/plain;base64,' + currentContent;
         try {
-          chrome.downloads.download({
-              url: finalURI, //currentURL.url
-              filename: 'All Resources/' + filepath,
-              saveAs: false
-            },
-            function (downloadId) {
-              var currentIndex = currentDownloadQueue.findIndex(function (item) {
-                return item.index === index
-              });
-              if (chrome.runtime.lastError) {
-                console.log('URI ERR: ', chrome.runtime.lastError, filepath); // , filepath, finalURI
-                // document.getElementById('status').innerHTML = 'Files to download: ERR occured';
-                currentDownloadQueue[currentIndex].resolved = true;
-                resolveCurrentDownload();
-              } else {
-                currentDownloadQueue[currentIndex].id = downloadId;
-                currentDownloadQueue[currentIndex].order = currentIndex;
-                //console.log('Create: ', JSON.stringify(currentDownloadQueue));
-                //console.log(currentDownloadQueue);
-                //chrome.downloads.search({
-                //  id: downloadId
-                //}, function (item) {
-                //  //console.log(item[0].state);
-                //})
-              }
-            }
-          );
+          fileziplist.push([filepath, finalURI]);
+          resolveCurrentDownload();
+          // chrome.downloads.download({
+          //     url: finalURI, //currentURL.url
+          //     filename: 'All Resources/' + filepath,
+          //     saveAs: false
+          //   },
+          //   function (downloadId) {
+          //     var currentIndex = currentDownloadQueue.findIndex(function (item) {
+          //       return item.index === index
+          //     });
+          //     if (chrome.runtime.lastError) {
+          //       console.log('URI ERR: ', chrome.runtime.lastError, filepath); // , filepath, finalURI
+          //       // document.getElementById('status').innerHTML = 'Files to download: ERR occured';
+          //       currentDownloadQueue[currentIndex].resolved = true;
+          //       resolveCurrentDownload();
+          //     } else {
+          //       currentDownloadQueue[currentIndex].id = downloadId;
+          //       currentDownloadQueue[currentIndex].order = currentIndex;
+          //       //console.log('Create: ', JSON.stringify(currentDownloadQueue));
+          //       //console.log(currentDownloadQueue);
+          //       //chrome.downloads.search({
+          //       //  id: downloadId
+          //       //}, function (item) {
+          //       //  //console.log(item[0].state);
+          //       //})
+          //     }
+          //   }
+          // );
         } catch (runTimeErr) {
           console.log(runTimeErr)
         }
@@ -296,15 +304,17 @@ function downloadURLs(urls, callback) {
   });
 
   function resolveCurrentDownload() {
-    var count = currentDownloadQueue.filter(function (item) {
-      return item.resolved === true
-    }).length;
+    // var count = currentDownloadQueue.filter(function (item) {
+    //   return item.resolved === true
+    // }).length;
     //console.log('Count: ', count, '---', urls.length);
     if (count === urls.length) {
       //console.log('Callback');
       currentDownloadQueue = [];
       callback();
     }
+    count++;
+
   };
 
   chrome.downloads.onChanged.addListener(function (downloadItem) {
