@@ -437,7 +437,7 @@ function addItemsToZipWriter(blobWriter, items, callback) {
       try {
         var tryAtob = atob(item.content);
       } catch (err) {
-        console.log('Not Base64 fallback to text');
+        console.log(item.url, ' is not base64 encoding, fallback to plain text');
         item.encoding = null;
       }
     }
@@ -455,9 +455,10 @@ function addItemsToZipWriter(blobWriter, items, callback) {
           function () {
             // On Success
             addItemsToZipWriter(blobWriter, rest, callback);
-          
+            
+            // Update Report Table
             newList.className = 'each-done';
-            newList.innerHTML = '<li>Done</li><li class="success">Success</li><li>' + item.url + '</li>';
+            newList.innerHTML = '<li>Added</li><li class="success">Success</li><li>' + item.url + '</li>';
             document.getElementById('debug').insertBefore(newList, document.getElementById('debug').childNodes[0]);
           },
           function () {
@@ -465,11 +466,15 @@ function addItemsToZipWriter(blobWriter, items, callback) {
           }
         );
       } else {
-        // If no size, skip to next item
+        
         console.log('EXCLUDED: ',item);
+        
+        // Update Report Table
         newList.className = 'each-failed';
-        newList.innerHTML = '<li>Failed</li><li class="failed">Failed</li><li>' + item.url + '</li>';
+        newList.innerHTML = '<li>Excluded</li><li class="failed">Failed</li><li>' + item.url + '</li>';
         document.getElementById('debug').insertBefore(newList, document.getElementById('debug').childNodes[0]);
+        
+        // If no size, skip to next item
         addItemsToZipWriter(blobWriter, rest, callback);
       }
     });

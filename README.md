@@ -4,12 +4,11 @@
 
 Extension can be found here:
 
-
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
-- 0.0.9: Add compressing ([zip.js](https://gildas-lormeau.github.io/zip.js/)) option that fetch all assets from browser cache, compress and download them at once. Thanks to [@shanligang](https://github.com/shanligang) for your great idea and contribution!
+- 0.0.9: Add a compressing option that fetch all resources from browser-cache, compress([zip.js](https://gildas-lormeau.github.io/zip.js/)) & download at once. Thanks to [@shanligang](https://github.com/shanligang) for great idea/contribution!
 
-- 0.0.8: Continue download on chrome runtime error, bug fixes, violating path fixes.
+- 0.0.8: Continue download on Chrome runtime error, bug fixes, violating path fixes.
 
 - 0.0.7: Violating path fixes.
 
