@@ -7,6 +7,8 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
+- 0.0.9: Add compressing option that fetchs all assets from browser cache, compress and download them at once. Thank to [@shanligang](https://github.com/shanligang) for you great idea and contribution!
+
 - 0.0.8: Continue download on chrome runtime error, bug fixes, violating path fixes.
 
 - 0.0.7: Violating path fixes.
