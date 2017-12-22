@@ -135,6 +135,9 @@ function saveAllResources(e) {
       console.log('Download List: ', toDownload)
 
       if (document.getElementById('check-zip').checked) {
+        // No need to turn off notification for only one zip file
+        chrome.downloads.setShelfEnabled(true);
+        
         downloadZipFile(toDownload, allDone);
       } else {
         downloadListWithThread(toDownload, downloadThread, allDone);
@@ -370,9 +373,6 @@ function downloadURLs(urls, callback) {
 }
 
 function downloadZipFile(toDownload, callback) {
-  // No need to hide download for only one zip file
-  chrome.downloads.setShelfEnabled = true;
-  
   if (zip) {
     zip.workerScriptsPath = "zip/";
     getAllToDownloadContent(toDownload, function (result) {
