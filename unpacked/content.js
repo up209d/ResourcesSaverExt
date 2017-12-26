@@ -2,12 +2,32 @@ document.addEventListener('DOMContentLoaded', function () {
   //	chrome.devtools.network.getHAR(function(logInfo){
   //			console.log(logInfo);
   //		});
-  window.reqs = []
-  chrome.devtools.network.onRequestFinished.addListener(function (req) {
-    req.getContent(function (body) {
-      window.reqs.push(body);
-    })
-  });
+  //  reqs = []
+    chrome.devtools.network.onRequestFinished.addListener(function (req) {
+  //    req.getContent(function (body) {
+  //      reqs.push(Object.assign({},{body: body,url: req.request.url}));
+  //      console.log(reqs[reqs.length-1],reqs.length);
+  //      setResourceCount();
+  //    })
+  //    var resolvedURL = resolveURLToPath(req.request.url).path;
+  //      if (!reqs.includes(req.request.url)) {
+  //        reqs.push(req.request.url);
+  //      }
+      setResourceCount();
+    });
+  
+  var setResourceCount = debounce(function(){
+    if (document.getElementById('check-xhr').checked) {
+      chrome.devtools.network.getHAR(function(logInfo) {
+        document.getElementById('status').innerHTML = 'All requests count: ' + logInfo.entries.length;
+      });
+    } else {
+      chrome.devtools.inspectedWindow.getResources(function (resources) {
+        document.getElementById('status').innerHTML = 'Static resources count: ' + resources.length;
+      })
+    }
+  },500);
+
 
   document.getElementById('up-save').addEventListener('click', saveAllResources);
 
@@ -26,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       e.target.checked = false;
     }
+    setResourceCount();
   });
 
   chrome.devtools.inspectedWindow.getResources(function (resources) {
@@ -54,8 +75,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // alert("New Resource  Object is " + resource);
     //    console.log('Resource Commited: ', resource.url);
   });
-
-
 });
 
 function tabCompleteHandler(tabId, changeInfo) {
@@ -106,15 +125,14 @@ function saveAllResources(e) {
 
       var combineResources = xhrResources.concat(resources);
 
+      // Filter Resource here
       if (document.getElementById('check-all').checked) {
         for (i = 0; i < combineResources.length; i++) {
-          if (combineResources[i].url.search(/^(http|https)/) !== -1) {
-            // Make sure unique URL
-            if (toDownload.findIndex(function (item) {
-                return item.url === combineResources[i].url
-              }) === -1) {
-              toDownload.push(combineResources[i]);
-            }
+          // Make sure unique URL
+          if (toDownload.findIndex(function (item) {
+              return item.url === combineResources[i].url
+            }) === -1) {
+            toDownload.push(combineResources[i]);
           }
         }
       } else {
@@ -147,21 +165,34 @@ function saveAllResources(e) {
   })
 }
 
-function allDone() {
+function allDone(isSuccess) {
+  // Default value
+  if (typeof isSuccess === 'undefined') {
+    isSuccess = true;
+  }
+  
   // Re-enable Download notification
   chrome.downloads.setShelfEnabled(true);
-
   var endStatus = document.createElement('p');
-  endStatus.className = 'all-done';
-  endStatus.innerHTML = 'Downloaded All Files !!!';
-  document.getElementById('debug').insertBefore(endStatus, document.getElementById('debug').childNodes[0]);
 
-  var openDownload = document.createElement('button');
-  openDownload.innerHTML = 'Open';
-  openDownload.addEventListener('click', function () {
-    chrome.downloads.showDefaultFolder();
-  });
+  // Report in the end
+  if (isSuccess) {
+    endStatus.className = 'all-done';
+    endStatus.innerHTML = 'Downloaded All Files !!!';
+    document.getElementById('debug').insertBefore(endStatus, document.getElementById('debug').childNodes[0]);
 
+    var openDownload = document.createElement('button');
+    openDownload.innerHTML = 'Open';
+    openDownload.addEventListener('click', function () {
+      chrome.downloads.showDefaultFolder();
+    });
+  } else {
+    endStatus.className = 'all-done';
+    endStatus.innerHTML = 'Something wrong, please try again or contact me for the issue.';
+    document.getElementById('debug').insertBefore(endStatus, document.getElementById('debug').childNodes[0]);
+  }
+
+  // Restore/Change button state
   document.getElementById('status').innerHTML = 'Resources Folder: ';
   document.getElementById('status').appendChild(openDownload);
 
@@ -183,33 +214,43 @@ function downloadListWithThread(toDownload, threadCount, callback) {
 }
 
 function resolveURLToPath(cUrl) {
-  var filepath, filename;
-
-  if (cUrl.search(/\:\/\//) === -1) {
-    console.log('Data URI Detected!');
+  var filepath, filename, isDataURI;
+  var foundIndex = cUrl.search(/\:\/\//);
+  // Check the url whether it is a link or a string of text data
+  if ((foundIndex === -1) || (foundIndex >= 10)) {
+    isDataURI = true;
+    console.log('Data URI Detected!!!!!');
     filename = 'file.' + Math.random().toString(16) + '.txt';
-    filepath = 'dataURI/' + filename;
+    filepath = '_DataURI/' + filename;
   } else {
+    isDataURI = false;
     filepath = cUrl.split('://')[1].split('?')[0];
     if (filepath.charAt(filepath.length - 1) === '/') {
       filepath = filepath + 'index.html';
     }
     filename = filepath.substring(filepath.lastIndexOf('/') + 1);
-    if (filename.search(/\./) === -1) {
-      filepath = filepath + '.html';
-    }
   }
-
+  
+  // Get Rid of QueryString after ;
+  filepath = filepath.substring(0,filepath.lastIndexOf('/')+1) + filename.split(';')[0];
+  
+  // Add default extension to non extension filename
+  if (filename.search(/\./) === -1) {
+    filepath = filepath + '.html';
+  }
+  
   filepath = filepath
     .replace(/\:|\\|\/\/|\=|\*|\.$|\"|\'|\?|\~|\||\<|\>/g, '')
     .replace(/(\s|\.)\//g, '/')
     .replace(/\/(\s|\.)/g, '/');
 
-  //  console.log('Save to: ', filepath);
-
+  console.log('Save to: ', filepath);
+  //  console.log('File name: ',filename);
+  
   return {
     path: filepath,
-    name: filename
+    name: filename,
+    dataURI: isDataURI && cUrl
   }
 }
 
@@ -237,17 +278,25 @@ function downloadURLs(urls, callback) {
         if (filename.search(/\.(png|jpg|jpeg|gif|ico|svg)/) !== -1) {
           currentEnconding = 'base64';
         }
-
-        var currentContent = currentEnconding ? content : (function () {
-          try {
-            return btoa(content);
-          } catch (err) {
-            console.log('utoa fallback: ', currentURL.url);
-            return btoa(unescape(encodeURIComponent(content)));
-          }
-        })(); //btoa(unescape(encodeURIComponent(content)))
-
-        var finalURI = 'data:text/plain;base64,' + currentContent;
+        
+        var currentContent,finalURI;
+        
+        if (resolvedURL.dataURI) {
+          currentContent = content;
+          finalURI = 'data:text/plain;charset=UTF-8,'+encodeURIComponent(resolvedURL.dataURI);
+        } else {
+          currentContent = currentEnconding ? content : (function () {
+            try {
+              return btoa(content);
+            } catch (err) {
+              console.log('utoa fallback: ', currentURL.url);
+              return btoa(unescape(encodeURIComponent(content)));
+            }
+          })(); //btoa(unescape(encodeURIComponent(content)))
+          
+          finalURI = 'data:text/plain;base64,' + currentContent;
+        }
+      
         try {
           chrome.downloads.download({
               url: finalURI, //currentURL.url
@@ -344,6 +393,11 @@ function downloadURLs(urls, callback) {
             var newListUrl = currentDownloadQueue.find(function (item) {
               return item.id === downloadItem.id
             }).url;
+            
+            if (newListUrl.indexOf('data:') === 0) {
+              newListUrl = 'DATA URI CONTENT';
+            }
+            
             var newList = document.createElement('ul');
             newList.className = 'each-done';
             newList.innerHTML = '<li>' + item[0].id + '</li><li class="success">Success</li><li>' + newListUrl + '</li>';
@@ -381,7 +435,8 @@ function downloadZipFile(toDownload, callback) {
         addItemsToZipWriter(blobWriter, result, downloadCompleteZip.bind(this,blobWriter,callback));
       }, function (err) {
         console.log('ERROR: ', err,currentRest);
-        // Continue on Error
+        // Continue on Error, error might lead to corrupted zip, so might need to escape here
+        callback(false);
       });
     });
   } else {
@@ -390,8 +445,10 @@ function downloadZipFile(toDownload, callback) {
 };
 
 function getAllToDownloadContent(toDownload, callback) {
+  // Prepare the file list for adding into zip
   var result = [];
   var pendingDownloads = toDownload.length;
+  
   toDownload.forEach(function (item, index) {
     if (item.getContent) {
       item.getContent(function (body, encode) {
@@ -404,19 +461,26 @@ function getAllToDownloadContent(toDownload, callback) {
         if (filename.search(/\.(png|jpg|jpeg|gif|ico|svg)/) !== -1) {
           currentEnconding = 'base64';
         }
+        
+        if (resolvedItem.dataURI) {
+          currentEnconding = null;
+        }
 
+        // Make sure the file is unique, otherwise exclude
         var foundIndex = result.findIndex(function (currentItem) {
           return currentItem.url === newURL;
         });
 
+        // Only add to result when the url is unique
         if (foundIndex === -1) {
           result.push({
-            url: resolveURLToPath(item.url).path,
-            content: body,
+            url: newURL,
+            content: resolvedItem.dataURI || body,
             encoding: currentEnconding
           });
         }
 
+        // Callback when all done
         pendingDownloads--;
         if (pendingDownloads === 0) {
           callback(result);
@@ -429,9 +493,12 @@ function getAllToDownloadContent(toDownload, callback) {
 }
 
 function addItemsToZipWriter(blobWriter, items, callback) {
-  let item = items[0];
-  let rest = items.slice(1);
+  var item = items[0];
+  var rest = items.slice(1);
+  
+  // if item exist so add it to zip
   if (item) {
+    // Check whether base64 encoding is valid
     if (item.encoding === 'base64') {
       // Try to decode first
       try {
@@ -441,19 +508,21 @@ function addItemsToZipWriter(blobWriter, items, callback) {
         item.encoding = null;
       }
     }
+    
+    // Create a reader of the content for zip
     var resolvedContent = (item.encoding === 'base64') ? new zip.Data64URIReader(item.content || '') : new zip.TextReader(item.content || ' ');
     
+    // Update status
     document.getElementById('status').innerHTML = 'Compressing: ' + item.url;
     var newList = document.createElement('ul');
 
-    
     // Make sure the file has some byte otherwise no import to avoid corrupted zip
     resolvedContent.init(function(){
       if (resolvedContent.size > 0) {
         console.log(resolvedContent.size,item);
         blobWriter.add(item.url, resolvedContent,
           function () {
-            // On Success
+            // On Success, to the next item
             addItemsToZipWriter(blobWriter, rest, callback);
             
             // Update Report Table
@@ -466,7 +535,7 @@ function addItemsToZipWriter(blobWriter, items, callback) {
           }
         );
       } else {
-        
+        // If no size, exclude the item
         console.log('EXCLUDED: ',item);
         
         // Update Report Table
@@ -474,18 +543,20 @@ function addItemsToZipWriter(blobWriter, items, callback) {
         newList.innerHTML = '<li>Excluded</li><li class="failed">Failed</li><li>' + item.url + '</li>';
         document.getElementById('debug').insertBefore(newList, document.getElementById('debug').childNodes[0]);
         
-        // If no size, skip to next item
+        // To the next item
         addItemsToZipWriter(blobWriter, rest, callback);
       }
     });
 
   } else {
+    // Callback when all done
     callback();
   }
   return rest;
 }
 
 function downloadCompleteZip(blobWriter,callback) {
+  // Close the writer and save it by dataURI
   blobWriter.close(function (blob) {
     chrome.downloads.download({
       url: URL.createObjectURL(blob),
@@ -500,6 +571,25 @@ function downloadCompleteZip(blobWriter,callback) {
     });
   });
 }
+
+// Returns a function, that, as long as it continues to be invoked, will not
+// be triggered. The function will be called after it stops being called for
+// N milliseconds. If `immediate` is passed, trigger the function on the
+// leading edge, instead of the trailing.
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
 
 // console.log('Hello from -> Content');
 
