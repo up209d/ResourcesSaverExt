@@ -244,7 +244,7 @@ function resolveURLToPath(cUrl) {
     .replace(/(\s|\.)\//g, '/')
     .replace(/\/(\s|\.)/g, '/');
 
-  console.log('Save to: ', filepath);
+  //  console.log('Save to: ', filepath);
   //  console.log('File name: ',filename);
   
   return {
