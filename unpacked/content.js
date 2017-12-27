@@ -3,22 +3,22 @@ document.addEventListener('DOMContentLoaded', function () {
   //			console.log(logInfo);
   //		});
   //  reqs = []
-    chrome.devtools.network.onRequestFinished.addListener(function (req) {
-  //    req.getContent(function (body) {
-  //      reqs.push(Object.assign({},{body: body,url: req.request.url}));
-  //      console.log(reqs[reqs.length-1],reqs.length);
-  //      setResourceCount();
-  //    })
-  //    var resolvedURL = resolveURLToPath(req.request.url).path;
-  //      if (!reqs.includes(req.request.url)) {
-  //        reqs.push(req.request.url);
-  //      }
-      setResourceCount();
-    });
-  
-  var setResourceCount = debounce(function(){
+  chrome.devtools.network.onRequestFinished.addListener(function (req) {
+    //    req.getContent(function (body) {
+    //      reqs.push(Object.assign({},{body: body,url: req.request.url}));
+    //      console.log(reqs[reqs.length-1],reqs.length);
+    //      setResourceCount();
+    //    })
+    //    var resolvedURL = resolveURLToPath(req.request.url).path;
+    //      if (!reqs.includes(req.request.url)) {
+    //        reqs.push(req.request.url);
+    //      }
+    setResourceCount();
+  });
+
+  var setResourceCount = debounce(function () {
     if (document.getElementById('check-xhr').checked) {
-      chrome.devtools.network.getHAR(function(logInfo) {
+      chrome.devtools.network.getHAR(function (logInfo) {
         document.getElementById('status').innerHTML = 'All requests count: ' + logInfo.entries.length;
       });
     } else {
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('status').innerHTML = 'Static resources count: ' + resources.length;
       })
     }
-  },500);
+  }, 500);
 
 
   document.getElementById('up-save').addEventListener('click', saveAllResources);
@@ -89,11 +89,7 @@ function tabCompleteHandler(tabId, changeInfo) {
   }
 }
 
-function saveAllResources(e) {
-
-  var toDownload = [];
-  var downloadThread = 5;
-
+function getXHRs(callback) {
   var xhrResources = [];
   if (document.getElementById('check-xhr').checked) {
     chrome.devtools.network.getHAR(function (logInfo) {
@@ -102,43 +98,44 @@ function saveAllResources(e) {
           getContent: entry.getContent
         }));
       })
+      callback(xhrResources);
     });
+  } else {
+    callback(xhrResources);
   }
+}
 
-  // Disable download notification
-  chrome.downloads.setShelfEnabled(false);
+function saveAllResources(e) {
+  var toDownload = [];
+  var downloadThread = 5;
 
-  chrome.tabs.get(chrome.devtools.inspectedWindow.tabId, function (tab) {
-    console.log('Save content from: ', tab.url);
-    var domain = tab.url.split('://')[1].substring(0, tab.url.split('://')[1].indexOf('/'));
-    //Fetching all available resources and filtering using name of script snippet added 
-    chrome.devtools.inspectedWindow.getResources(function (resources) {
-      //		resources.map(function (item) {
-      //			console.log(item);
-      //		})
-      //		alert(resources);
-      // This function returns array of resources available in the current window
+  // Reset Report Table
+  document.getElementById('debug').innerHTML = '';
 
-      // Disable button
-      e.target.innerHTML = 'Starting Download';
-      e.target.disabled = true;
+  getXHRs(function (xhrResources) {
+    // Disable download notification
+    chrome.downloads.setShelfEnabled(false);
 
-      var combineResources = xhrResources.concat(resources);
+    chrome.tabs.get(chrome.devtools.inspectedWindow.tabId, function (tab) {
+      console.log('Save content from: ', tab.url);
+      var domain = tab.url.split('://')[1].substring(0, tab.url.split('://')[1].indexOf('/'));
+      //Fetching all available resources and filtering using name of script snippet added 
+      chrome.devtools.inspectedWindow.getResources(function (resources) {
+        //		resources.map(function (item) {
+        //			console.log(item);
+        //		})
+        //		alert(resources);
+        // This function returns array of resources available in the current window
 
-      // Filter Resource here
-      if (document.getElementById('check-all').checked) {
-        for (i = 0; i < combineResources.length; i++) {
-          // Make sure unique URL
-          if (toDownload.findIndex(function (item) {
-              return item.url === combineResources[i].url
-            }) === -1) {
-            toDownload.push(combineResources[i]);
-          }
-        }
-      } else {
-        for (i = 0; i < combineResources.length; i++) {
-          // Matching with current snippet URL
-          if (combineResources[i].url.indexOf('://' + domain) >= 0) {
+        // Disable button
+        e.target.innerHTML = 'Starting Download';
+        e.target.disabled = true;
+
+        var combineResources = xhrResources.concat(resources);
+
+        // Filter Resource here
+        if (document.getElementById('check-all').checked) {
+          for (i = 0; i < combineResources.length; i++) {
             // Make sure unique URL
             if (toDownload.findIndex(function (item) {
                 return item.url === combineResources[i].url
@@ -146,23 +143,35 @@ function saveAllResources(e) {
               toDownload.push(combineResources[i]);
             }
           }
+        } else {
+          for (i = 0; i < combineResources.length; i++) {
+            // Matching with current snippet URL
+            if (combineResources[i].url.indexOf('://' + domain) >= 0) {
+              // Make sure unique URL
+              if (toDownload.findIndex(function (item) {
+                  return item.url === combineResources[i].url
+                }) === -1) {
+                toDownload.push(combineResources[i]);
+              }
+            }
+          }
         }
-      }
 
-      console.log('Combine Resource: ', combineResources);
-      console.log('Download List: ', toDownload)
+        console.log('Combine Resource: ', combineResources);
+        console.log('Download List: ', toDownload)
 
-      if (document.getElementById('check-zip').checked) {
-        // No need to turn off notification for only one zip file
-        chrome.downloads.setShelfEnabled(true);
-        
-        downloadZipFile(toDownload, allDone);
-      } else {
-        downloadListWithThread(toDownload, downloadThread, allDone);
-      }
+        if (document.getElementById('check-zip').checked) {
+          // No need to turn off notification for only one zip file
+          chrome.downloads.setShelfEnabled(true);
 
-    });
-  })
+          downloadZipFile(toDownload, allDone);
+        } else {
+          downloadListWithThread(toDownload, downloadThread, allDone);
+        }
+
+      });
+    })
+  });
 }
 
 function allDone(isSuccess) {
@@ -170,7 +179,7 @@ function allDone(isSuccess) {
   if (typeof isSuccess === 'undefined') {
     isSuccess = true;
   }
-  
+
   // Re-enable Download notification
   chrome.downloads.setShelfEnabled(true);
   var endStatus = document.createElement('p');
@@ -220,7 +229,15 @@ function resolveURLToPath(cUrl) {
   if ((foundIndex === -1) || (foundIndex >= 10)) {
     isDataURI = true;
     console.log('Data URI Detected!!!!!');
-    filename = 'file.' + Math.random().toString(16) + '.txt';
+
+    if (cUrl.indexOf('data:') === 0) {
+      var dataURIInfo = cUrl.split(';')[0].split(',')[0].substring(0, 30).replace(/[^A-Za-z0-9]/g, '.');
+      // console.log('=====> ',dataURIInfo);
+      filename = dataURIInfo + '.' + Math.random().toString(16).substring(2) + '.txt';
+    } else {
+      filename = 'data.' + Math.random().toString(16).substring(2) + '.txt';
+    }
+
     filepath = '_DataURI/' + filename;
   } else {
     isDataURI = false;
@@ -230,15 +247,15 @@ function resolveURLToPath(cUrl) {
     }
     filename = filepath.substring(filepath.lastIndexOf('/') + 1);
   }
-  
+
   // Get Rid of QueryString after ;
-  filepath = filepath.substring(0,filepath.lastIndexOf('/')+1) + filename.split(';')[0];
-  
+  filepath = filepath.substring(0, filepath.lastIndexOf('/') + 1) + filename.split(';')[0];
+
   // Add default extension to non extension filename
   if (filename.search(/\./) === -1) {
     filepath = filepath + '.html';
   }
-  
+
   filepath = filepath
     .replace(/\:|\\|\/\/|\=|\*|\.$|\"|\'|\?|\~|\||\<|\>/g, '')
     .replace(/(\s|\.)\//g, '/')
@@ -246,7 +263,7 @@ function resolveURLToPath(cUrl) {
 
   //  console.log('Save to: ', filepath);
   //  console.log('File name: ',filename);
-  
+
   return {
     path: filepath,
     name: filename,
@@ -278,12 +295,12 @@ function downloadURLs(urls, callback) {
         if (filename.search(/\.(png|jpg|jpeg|gif|ico|svg)/) !== -1) {
           currentEnconding = 'base64';
         }
-        
-        var currentContent,finalURI;
-        
+
+        var currentContent, finalURI;
+
         if (resolvedURL.dataURI) {
           currentContent = content;
-          finalURI = 'data:text/plain;charset=UTF-8,'+encodeURIComponent(resolvedURL.dataURI);
+          finalURI = 'data:text/plain;charset=UTF-8,' + encodeURIComponent(resolvedURL.dataURI);
         } else {
           currentContent = currentEnconding ? content : (function () {
             try {
@@ -293,10 +310,10 @@ function downloadURLs(urls, callback) {
               return btoa(unescape(encodeURIComponent(content)));
             }
           })(); //btoa(unescape(encodeURIComponent(content)))
-          
+
           finalURI = 'data:text/plain;base64,' + currentContent;
         }
-      
+
         try {
           chrome.downloads.download({
               url: finalURI, //currentURL.url
@@ -393,11 +410,11 @@ function downloadURLs(urls, callback) {
             var newListUrl = currentDownloadQueue.find(function (item) {
               return item.id === downloadItem.id
             }).url;
-            
+
             if (newListUrl.indexOf('data:') === 0) {
               newListUrl = 'DATA URI CONTENT';
             }
-            
+
             var newList = document.createElement('ul');
             newList.className = 'each-done';
             newList.innerHTML = '<li>' + item[0].id + '</li><li class="success">Success</li><li>' + newListUrl + '</li>';
@@ -432,9 +449,9 @@ function downloadZipFile(toDownload, callback) {
     getAllToDownloadContent(toDownload, function (result) {
       console.log(result);
       zip.createWriter(new zip.BlobWriter(), function (blobWriter) {
-        addItemsToZipWriter(blobWriter, result, downloadCompleteZip.bind(this,blobWriter,callback));
+        addItemsToZipWriter(blobWriter, result, downloadCompleteZip.bind(this, blobWriter, callback));
       }, function (err) {
-        console.log('ERROR: ', err,currentRest);
+        console.log('ERROR: ', err, currentRest);
         // Continue on Error, error might lead to corrupted zip, so might need to escape here
         callback(false);
       });
@@ -448,10 +465,16 @@ function getAllToDownloadContent(toDownload, callback) {
   // Prepare the file list for adding into zip
   var result = [];
   var pendingDownloads = toDownload.length;
-  
+
+  // window.toDownload = toDownload;
+
   toDownload.forEach(function (item, index) {
     if (item.getContent) {
       item.getContent(function (body, encode) {
+
+        if (chrome.runtime.lastError) {
+          console.log(chrome.runtime.lastError);
+        }
         // console.log(index,': ',encode,'---->',body ? body.substring(0,20) : null);
         var resolvedItem = resolveURLToPath(item.url);
         var newURL = resolvedItem.path;
@@ -461,7 +484,7 @@ function getAllToDownloadContent(toDownload, callback) {
         if (filename.search(/\.(png|jpg|jpeg|gif|ico|svg)/) !== -1) {
           currentEnconding = 'base64';
         }
-        
+
         if (resolvedItem.dataURI) {
           currentEnconding = null;
         }
@@ -474,11 +497,15 @@ function getAllToDownloadContent(toDownload, callback) {
         // Only add to result when the url is unique
         if (foundIndex === -1) {
           result.push({
+            originalUrl: item.url,
             url: newURL,
             content: resolvedItem.dataURI || body,
             encoding: currentEnconding
           });
         }
+
+        // Update status bar
+        document.getElementById('status').innerHTML = 'Fetched: ' + resolvedItem.path;
 
         // Callback when all done
         pendingDownloads--;
@@ -495,7 +522,7 @@ function getAllToDownloadContent(toDownload, callback) {
 function addItemsToZipWriter(blobWriter, items, callback) {
   var item = items[0];
   var rest = items.slice(1);
-  
+
   // if item exist so add it to zip
   if (item) {
     // Check whether base64 encoding is valid
@@ -508,23 +535,27 @@ function addItemsToZipWriter(blobWriter, items, callback) {
         item.encoding = null;
       }
     }
-    
+
     // Create a reader of the content for zip
-    var resolvedContent = (item.encoding === 'base64') ? new zip.Data64URIReader(item.content || '') : new zip.TextReader(item.content || ' ');
-    
-    // Update status
-    document.getElementById('status').innerHTML = 'Compressing: ' + item.url;
+    var resolvedContent = (item.encoding === 'base64') ? 
+        new zip.Data64URIReader(item.content || '') : 
+        new zip.TextReader(item.content || 'No Content: ' + item.originalUrl);
+
+    // Create a Row of Report Table
     var newList = document.createElement('ul');
 
     // Make sure the file has some byte otherwise no import to avoid corrupted zip
-    resolvedContent.init(function(){
+    resolvedContent.init(function () {
       if (resolvedContent.size > 0) {
-        console.log(resolvedContent.size,item);
+        console.log(resolvedContent.size, item.encoding || 'No Encoding', item.url);
         blobWriter.add(item.url, resolvedContent,
           function () {
             // On Success, to the next item
             addItemsToZipWriter(blobWriter, rest, callback);
-            
+
+            // Update Status
+            document.getElementById('status').innerHTML = 'Compressed: ' + item.url;
+
             // Update Report Table
             newList.className = 'each-done';
             newList.innerHTML = '<li>Added</li><li class="success">Success</li><li>' + item.url + '</li>';
@@ -536,13 +567,16 @@ function addItemsToZipWriter(blobWriter, items, callback) {
         );
       } else {
         // If no size, exclude the item
-        console.log('EXCLUDED: ',item);
-        
+        console.log('EXCLUDED: ', item.url);
+
+        // Update Status
+        document.getElementById('status').innerHTML = 'Excluded: ' + item.url;
+
         // Update Report Table
         newList.className = 'each-failed';
         newList.innerHTML = '<li>Excluded</li><li class="failed">Failed</li><li>' + item.url + '</li>';
         document.getElementById('debug').insertBefore(newList, document.getElementById('debug').childNodes[0]);
-        
+
         // To the next item
         addItemsToZipWriter(blobWriter, rest, callback);
       }
@@ -555,7 +589,7 @@ function addItemsToZipWriter(blobWriter, items, callback) {
   return rest;
 }
 
-function downloadCompleteZip(blobWriter,callback) {
+function downloadCompleteZip(blobWriter, callback) {
   // Close the writer and save it by dataURI
   blobWriter.close(function (blob) {
     chrome.downloads.download({
@@ -577,18 +611,19 @@ function downloadCompleteZip(blobWriter,callback) {
 // N milliseconds. If `immediate` is passed, trigger the function on the
 // leading edge, instead of the trailing.
 function debounce(func, wait, immediate) {
-	var timeout;
-	return function() {
-		var context = this, args = arguments;
-		var later = function() {
-			timeout = null;
-			if (!immediate) func.apply(context, args);
-		};
-		var callNow = immediate && !timeout;
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
-		if (callNow) func.apply(context, args);
-	};
+  var timeout;
+  return function () {
+    var context = this,
+      args = arguments;
+    var later = function () {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
 };
 
 // console.log('Hello from -> Content');
