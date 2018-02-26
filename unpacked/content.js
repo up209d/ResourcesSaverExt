@@ -256,12 +256,23 @@ function resolveURLToPath(cUrl) {
     filepath = filepath + '.html';
   }
 
+	// Remove path violation case
   filepath = filepath
     .replace(/\:|\\|\/\/|\=|\*|\.$|\"|\'|\?|\~|\||\<|\>/g, '')
     .replace(/(\s|\.)\//g, '/')
     .replace(/\/(\s|\.)/g, '/');
-
-  //  console.log('Save to: ', filepath);
+	
+	// Decode URI
+	if (filepath.indexOf('%') !== -1) {
+		try {
+			filepath = decodeURIComponent(filepath);
+			filename = decodeURIComponent(filename);
+		} catch(err) {
+			console.log(err);
+		}
+	}
+	
+	//  console.log('Save to: ', filepath);
   //  console.log('File name: ',filename);
 
   return {

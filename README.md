@@ -6,6 +6,8 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
+- 0.1.0: Unicode file path/name compatibility.
+
 - 0.0.9: Add a compressing option that fetch all resources from browser-cache, compress([zip.js](https://gildas-lormeau.github.io/zip.js/)) & download at once. Thanks to [@shanligang](https://github.com/shanligang) for great idea/contribution!
 
 - 0.0.8: Continue download on Chrome runtime error, bug fixes, violating path fixes.
