@@ -89,6 +89,8 @@ function tabCompleteHandler(tabId, changeInfo) {
   }
 }
 
+var reportElement = document.createElement('div');
+
 function getXHRs(callback) {
   var xhrResources = [];
   if (document.getElementById('check-xhr').checked) {
@@ -110,6 +112,7 @@ function saveAllResources(e) {
   var downloadThread = 5;
 
   // Reset Report Table
+	reportElement.innerHTML = '';
   document.getElementById('debug').innerHTML = '';
 
   getXHRs(function (xhrResources) {
@@ -128,7 +131,7 @@ function saveAllResources(e) {
         // This function returns array of resources available in the current window
 
         // Disable button
-        e.target.innerHTML = 'Starting Download';
+        e.target.innerHTML = 'Downloading...';
         e.target.disabled = true;
 
         var combineResources = xhrResources.concat(resources);
@@ -182,19 +185,22 @@ function allDone(isSuccess) {
 
   // Re-enable Download notification
   chrome.downloads.setShelfEnabled(true);
+	
+	// Push reportElement to debugElement
+	document.getElementById('debug').insertBefore(reportElement, document.getElementById('debug').childNodes[0]);
+	
   var endStatus = document.createElement('p');
+	var openDownload = document.createElement('button');
+	openDownload.innerHTML = 'Open';
+	openDownload.addEventListener('click', function () {
+		chrome.downloads.showDefaultFolder();
+	});
 
   // Report in the end
   if (isSuccess) {
     endStatus.className = 'all-done';
     endStatus.innerHTML = 'Downloaded All Files !!!';
     document.getElementById('debug').insertBefore(endStatus, document.getElementById('debug').childNodes[0]);
-
-    var openDownload = document.createElement('button');
-    openDownload.innerHTML = 'Open';
-    openDownload.addEventListener('click', function () {
-      chrome.downloads.showDefaultFolder();
-    });
   } else {
     endStatus.className = 'all-done';
     endStatus.innerHTML = 'Something wrong, please try again or contact me for the issue.';
@@ -429,7 +435,7 @@ function downloadURLs(urls, callback) {
             var newList = document.createElement('ul');
             newList.className = 'each-done';
             newList.innerHTML = '<li>' + item[0].id + '</li><li class="success">Success</li><li>' + newListUrl + '</li>';
-            document.getElementById('debug').insertBefore(newList, document.getElementById('debug').childNodes[0]);
+            reportElement.insertBefore(newList, reportElement.childNodes[0]);
             currentDownloadQueue[index].resolved = true;
             resolveCurrentDownload();
           });
@@ -444,7 +450,7 @@ function downloadURLs(urls, callback) {
             var newList = document.createElement('ul');
             newList.className = 'each-failed';
             newList.innerHTML = '<li>' + item[0].id + '</li><li class="failed">Failed</li><li>' + item[0].url + '</li>';
-            document.getElementById('debug').insertBefore(newList, document.getElementById('debug').childNodes[0]);
+            reportElement.insertBefore(newList, reportElement.childNodes[0]);
             currentDownloadQueue[index].resolved = true;
             resolveCurrentDownload();
           });
@@ -570,7 +576,7 @@ function addItemsToZipWriter(blobWriter, items, callback) {
             // Update Report Table
             newList.className = 'each-done';
             newList.innerHTML = '<li>Added</li><li class="success">Success</li><li>' + item.url + '</li>';
-            document.getElementById('debug').insertBefore(newList, document.getElementById('debug').childNodes[0]);
+            reportElement.insertBefore(newList, reportElement.childNodes[0]);
           },
           function () {
             // On Progress
@@ -586,7 +592,7 @@ function addItemsToZipWriter(blobWriter, items, callback) {
         // Update Report Table
         newList.className = 'each-failed';
         newList.innerHTML = '<li>Excluded</li><li class="failed">Failed</li><li>' + item.url + '</li>';
-        document.getElementById('debug').insertBefore(newList, document.getElementById('debug').childNodes[0]);
+        reportElement.insertBefore(newList, reportElement.childNodes[0]);
 
         // To the next item
         addItemsToZipWriter(blobWriter, rest, callback);

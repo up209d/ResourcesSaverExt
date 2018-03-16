@@ -19,6 +19,22 @@
     transform: translate3d(0, 0, 0);
   }
 }
+
+@keyframes dimming {
+	0% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 0.85;
+		transform: scale(0.95);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
 html, body {
   font-family: 'Dosis', Helvetica, Tahoma, sans-serif;
   font-weight: 400;
@@ -178,6 +194,7 @@ a:hover {
   background-color: #185bd3;
 }
 .up-content button[disabled] {
+	animation: dimming 2s both ease-in-out 0s infinite;
   background-color: #222222;
 }
 .up-content #debug p {
