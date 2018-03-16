@@ -168,10 +168,14 @@ a:hover {
 .up-content {
   padding: 30px;
   text-align: left;
+	min-width: 360px;
 }
 .up-content h1 {
   padding: 10px 0;
   border-bottom: 1px solid #EEE;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 .up-content h1 button {
   margin-left: 10px;
@@ -242,8 +246,31 @@ a:hover {
   animation: fadeInLeft 1s both cubic-bezier(0.1, 0.71, 0.28, 1.14) 0.2s 1;
 }
 
+#up-save {
+	
+}
+
 #status {
   margin-bottom: 10px;
+	background-color: #EFEFEF;
+	padding: 10px 10px 10px 15px;
+	word-break: break-all;
+	word-wrap: break-word;
+}
+
+#open-folder {
+	margin: 10px 0 0 0;
+	padding: 20px 0;
+	border-top: 1px dashed #EFEFEF;
+}
+
+#version {
+	font-size:9px;
+	position:absolute;
+	top: 30px;
+	left: 30px;
+	color: green;
+	pointer-events: none;
 }
 
 .success {
