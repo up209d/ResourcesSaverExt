@@ -19,11 +19,14 @@ document.addEventListener('DOMContentLoaded', function () {
 	var setResourceCount = debounce(function () {
 		if (document.getElementById('check-xhr').checked) {
 			chrome.devtools.network.getHAR(function (logInfo) {
-				if (!isDownloading) { document.getElementById('status').innerHTML = 'All requests count: ' + logInfo.entries.length; }
+				if (!isDownloading) { document.getElementById('status').innerHTML = 'Requests: ' + logInfo.entries.length; }
+				chrome.devtools.inspectedWindow.getResources(function (resources) {
+					if (!isDownloading) { document.getElementById('status').innerHTML += ' | Static Resources: ' + resources.length; }
+				})
 			});
 		} else {
 			chrome.devtools.inspectedWindow.getResources(function (resources) {
-				if (!isDownloading) { document.getElementById('status').innerHTML = 'Static resources count: ' + resources.length; }
+				if (!isDownloading) { document.getElementById('status').innerHTML = 'Static Resources count: ' + resources.length; }
 			})
 		}
 	}, 150);
@@ -98,7 +101,9 @@ function getXHRs(callback) {
 		chrome.devtools.network.getHAR(function (logInfo) {
 			logInfo.entries.map(function (entry) {
 				xhrResources.push(Object.assign({}, entry.request, {
-					getContent: entry.getContent
+					getContent: entry.getContent,
+					type: entry.response.content.mimeType || 'text/plain',
+					isStream: (entry.response.content.mimeType || '').indexOf('event-stream') !== -1
 				}));
 			})
 			callback(xhrResources);
@@ -137,7 +142,7 @@ function saveAllResources(e) {
 				//		})
 				//		alert(resources);
 				// This function returns array of resources available in the current window
-
+				
 				// Disable button
 				e.target.innerHTML = 'Downloading...';
 				e.target.disabled = true;
@@ -497,13 +502,12 @@ function getAllToDownloadContent(toDownload, callback) {
 	// Prepare the file list for adding into zip
 	var result = [];
 	var pendingDownloads = toDownload.length;
-
+	
 	// window.toDownload = toDownload;
 
 	toDownload.forEach(function (item, index) {
-		if (item.getContent) {
+		if (item.getContent && !!!item.isStream) {
 			item.getContent(function (body, encode) {
-
 				if (chrome.runtime.lastError) {
 					console.log(chrome.runtime.lastError);
 				}
@@ -529,6 +533,8 @@ function getAllToDownloadContent(toDownload, callback) {
 				// Only add to result when the url is unique
 				if (foundIndex === -1) {
 					result.push({
+						name: filename,
+						type: item.type || 'text/plain',
 						originalUrl: item.url,
 						url: newURL,
 						content: resolvedItem.dataURI || body,
@@ -541,6 +547,7 @@ function getAllToDownloadContent(toDownload, callback) {
 
 				// Callback when all done
 				pendingDownloads--;
+				
 				if (pendingDownloads === 0) {
 					callback(result);
 				}
@@ -557,14 +564,47 @@ function addItemsToZipWriter(blobWriter, items, callback) {
 
 	// if item exist so add it to zip
 	if (item) {
+		// Try to beautify JS,CSS,HTML here
+		if (js_beautify && 
+				html_beautify && 
+				css_beautify &&
+				document.getElementById('check-beautify').checked	&&
+				item.name &&
+				item.content
+			 ) {
+			var fileExt = item.name.match(/\.([0-9a-z]+)(?:[\?#]|$)/);
+			switch (fileExt ? fileExt[1] : '') {
+				case 'js': {
+					console.log(item.name,' will be beautified!');
+					item.content = js_beautify(item.content);
+					break;
+				}
+				case 'html': {
+					console.log(item.name,' will be beautified!');
+					item.content = html_beautify(item.content);
+					break;
+				}
+				case 'css': {
+					console.log(item.name,' will be beautified!');
+					item.content = css_beautify(item.content);
+					break;
+				}
+			}
+		}
+		
 		// Check whether base64 encoding is valid
 		if (item.encoding === 'base64') {
 			// Try to decode first
 			try {
 				var tryAtob = atob(item.content);
 			} catch (err) {
-				console.log(item.url, ' is not base64 encoding, fallback to plain text');
-				item.encoding = null;
+				console.log(item.url, ' is not base64 encoding, try to encode to base64.');
+				try {
+					item.content = btoa(item.content);
+				} catch (err) {
+					console.log(item.url, ' failed to encode to base64, fallback to text.');
+					item.encoding = null;
+				}
 			}
 		}
 
@@ -572,6 +612,18 @@ function addItemsToZipWriter(blobWriter, items, callback) {
 		var resolvedContent = (item.encoding === 'base64') ?
 			new zip.Data64URIReader(item.content || '') :
 			new zip.TextReader(item.content || 'No Content: ' + item.originalUrl);
+		
+//		if (item.url === 'node.datalabs.com.au/favicon.ico') {
+//			var buffer = new ArrayBuffer(item.content.length);
+//			var BlobUintArray = new Uint8Array(buffer);
+//			for (var i=0;i<=item.content.length;i++) {
+//				BlobUintArray[i] = item.content.charCodeAt(i) & 0xFF;
+//			}
+//			var blob = new Blob([BlobUintArray],{type:item.type || ''});
+//			var backToBase64 = btoa(String.fromCharCode.apply(null, BlobUintArray));
+//			console.log(backToBase64);
+//			resolvedContent = new zip.Data64URIReader(backToBase64);
+//		}
 
 		// Create a Row of Report Table
 		var newList = document.createElement('ul');
