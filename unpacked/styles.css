@@ -168,7 +168,7 @@ a:hover {
 .up-content {
   padding: 30px;
   text-align: left;
-	min-width: 360px;
+	min-width: 380px;
 }
 .up-content h1 {
   padding: 10px 0;
@@ -245,6 +245,49 @@ a:hover {
   background-color: rgba(255, 251, 242, 0.5);
   animation: fadeInLeft 1s both cubic-bezier(0.1, 0.71, 0.28, 1.14) 0.2s 1;
 }
+
+#refresh {
+	position: absolute;
+	top: 45px;
+	left: 218px;
+	padding: 5px;
+	border-radius: 50%;
+	cursor: pointer;
+	transition: all .3s ease-out;
+}
+
+#refresh #refresh-tip {
+	display: block;
+	position:absolute;
+	font-size: 11px;
+	width: 200px;
+	left: -90px;
+	top: -20px;
+	padding: 5px 5px 5px 10px;
+	background-color: indianred;
+	color: white;
+	opacity: 0;
+	transition: all .5s cubic-bezier(0.1, 0.71, 0.28, 1.14);
+}
+
+#refresh img {
+	transition: all .3s cubic-bezier(0.1, 0.71, 0.28, 1.14);
+}
+
+#refresh:hover {
+	background-color: rgba(0,0,0,0.1);
+}
+
+#refresh:hover #refresh-tip {
+	top: -32px;
+	opacity: 1;
+}
+
+#refresh:hover img {
+	transform: rotate(180deg);
+}
+
+
 
 #up-save {
 	

@@ -1,3 +1,7 @@
+document.getElementById('refresh').addEventListener('click',function(){
+	window.location.reload(true);
+});
+
 document.addEventListener('DOMContentLoaded', function () {
 	//	chrome.devtools.network.getHAR(function(logInfo){
 	//			console.log(logInfo);
