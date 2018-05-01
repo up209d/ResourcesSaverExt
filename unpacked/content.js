@@ -252,7 +252,7 @@ function downloadListWithThread(toDownload, threadCount, callback) {
 	});
 }
 
-function resolveURLToPath(cUrl) {
+function resolveURLToPath(cUrl,cType,cContent) {
 	var filepath, filename, isDataURI;
 	var foundIndex = cUrl.search(/\:\/\//);
 	// Check the url whether it is a link or a string of text data
@@ -283,7 +283,21 @@ function resolveURLToPath(cUrl) {
 
 	// Add default extension to non extension filename
 	if (filename.search(/\./) === -1) {
-		filepath = filepath + '.html';
+		// Special Case for Images with Base64
+		if (cType && cContent && cType.indexOf('image') === 0) {
+			if(cContent.charAt(0)=='/'){
+				filepath = filepath + '.jpg';
+			}
+			if(cContent.charAt(0)=='R'){
+				filepath = filepath + '.gif';
+			}
+			if(cContent.charAt(0)=='i'){
+				filepath = filepath + '.png';
+			}
+		} else {
+			// Add default html for text document
+			filepath = filepath + '.html';
+		}
 	}
 
 	// Remove path violation case
@@ -317,8 +331,9 @@ function downloadURLs(urls, callback) {
 	urls.forEach(function (currentURL, index) {
 		console.log('Current request: ', currentURL);
 		var cUrl = currentURL.url;
+		var cType = currentURL.type;
 		var resolvedURL = resolveURLToPath(cUrl);
-
+		
 		var filepath = resolvedURL.path;
 		var filename = resolvedURL.name;
 
@@ -516,7 +531,7 @@ function getAllToDownloadContent(toDownload, callback) {
 					console.log(chrome.runtime.lastError);
 				}
 				// console.log(index,': ',encode,'---->',body ? body.substring(0,20) : null);
-				var resolvedItem = resolveURLToPath(item.url);
+				var resolvedItem = resolveURLToPath(item.url,item.type,body);
 				var newURL = resolvedItem.path;
 				var filename = resolvedItem.name;
 				var currentEnconding = encode || null;
