@@ -283,16 +283,34 @@ function resolveURLToPath(cUrl,cType,cContent) {
 
 	// Add default extension to non extension filename
 	if (filename.search(/\./) === -1) {
-		// Special Case for Images with Base64
-		if (cType && cContent && cType.indexOf('image') === 0) {
-			if(cContent.charAt(0)=='/'){
-				filepath = filepath + '.jpg';
+		if (cType && cContent) {
+			// Special Case for Images with Base64
+			if (cType.indexOf('image') !== -1) {
+				if(cContent.charAt(0)=='/'){
+					filepath = filepath + '.jpg';
+				}
+				if(cContent.charAt(0)=='R'){
+					filepath = filepath + '.gif';
+				}
+				if(cContent.charAt(0)=='i'){
+					filepath = filepath + '.png';
+				}
 			}
-			if(cContent.charAt(0)=='R'){
-				filepath = filepath + '.gif';
+			// Stylesheet | CSS
+			if (cType.indexOf('stylesheet') !== -1 || cType.indexOf('css') !== -1) {
+				filepath = filepath + '.css';
 			}
-			if(cContent.charAt(0)=='i'){
-				filepath = filepath + '.png';
+			// JSON
+			if (cType.indexOf('json') !== -1) {
+				filepath = filepath + '.json';
+			}
+			// Javascript
+			if (cType.indexOf('javascript') !== -1) {
+				filepath = filepath + '.js';
+			}
+			// HTML
+			if (cType.indexOf('html') !== -1) {
+				filepath = filepath + '.html';
 			}
 		} else {
 			// Add default html for text document
@@ -661,7 +679,7 @@ function addItemsToZipWriter(blobWriter, items, callback) {
 
 						// Update Report Table
 						newList.className = 'each-done';
-						newList.innerHTML = '<li>Added</li><li class="success">Success</li><li>' + item.url + '</li>';
+						newList.innerHTML = '<li>Added</li><li class="success">Done</li><li>' + item.url + '</li>';
 						reportElement.insertBefore(newList, reportElement.childNodes[0]);
 					},
 					function () {
@@ -677,7 +695,7 @@ function addItemsToZipWriter(blobWriter, items, callback) {
 
 				// Update Report Table
 				newList.className = 'each-failed';
-				newList.innerHTML = '<li>Excluded</li><li class="failed">Failed</li><li>' + item.url + '</li>';
+				newList.innerHTML = '<li>Ignored</li><li class="failed">Failed</li><li>' + item.url + '</li>';
 				reportElement.insertBefore(newList, reportElement.childNodes[0]);
 
 				// To the next item
