@@ -320,7 +320,8 @@ function resolveURLToPath(cUrl,cType,cContent) {
 
 	// Remove path violation case
 	filepath = filepath
-		.replace(/\:|\\|\/\/|\=|\*|\.$|\"|\'|\?|\~|\||\<|\>/g, '')
+		.replace(/\:|\\|\=|\*|\.$|\"|\'|\?|\~|\||\<|\>/g, '')
+		.replace(/\/\//g,'/')
 		.replace(/(\s|\.)\//g, '/')
 		.replace(/\/(\s|\.)/g, '/');
 
@@ -649,18 +650,6 @@ function addItemsToZipWriter(blobWriter, items, callback) {
 		var resolvedContent = (item.encoding === 'base64') ?
 			new zip.Data64URIReader(item.content || '') :
 			new zip.TextReader(item.content || 'No Content: ' + item.originalUrl);
-		
-//		if (item.url === 'node.datalabs.com.au/favicon.ico') {
-//			var buffer = new ArrayBuffer(item.content.length);
-//			var BlobUintArray = new Uint8Array(buffer);
-//			for (var i=0;i<=item.content.length;i++) {
-//				BlobUintArray[i] = item.content.charCodeAt(i) & 0xFF;
-//			}
-//			var blob = new Blob([BlobUintArray],{type:item.type || ''});
-//			var backToBase64 = btoa(String.fromCharCode.apply(null, BlobUintArray));
-//			console.log(backToBase64);
-//			resolvedContent = new zip.Data64URIReader(backToBase64);
-//		}
 
 		// Create a Row of Report Table
 		var newList = document.createElement('ul');
