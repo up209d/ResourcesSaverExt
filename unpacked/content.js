@@ -283,54 +283,56 @@ function resolveURLToPath(cUrl,cType,cContent) {
 
 	// Add default extension to non extension filename
 	if (filename.search(/\./) === -1) {
+		let haveExtension = null;
 		if (cType && cContent) {
-			let haveExtension = false;
 			// Special Case for Images with Base64
 			if (cType.indexOf('image') !== -1) {
 				if(cContent.charAt(0)=='/'){
 					filepath = filepath + '.jpg';
-					haveExtension = true;
+					haveExtension = 'jpg';
 				}
 				if(cContent.charAt(0)=='R'){
 					filepath = filepath + '.gif';
-					haveExtension = true;
+					haveExtension = 'gif';
 				}
 				if(cContent.charAt(0)=='i'){
 					filepath = filepath + '.png';
-					haveExtension = true;
+					haveExtension = 'png';
 				}
 			}
 			// Stylesheet | CSS
 			if (cType.indexOf('stylesheet') !== -1 || cType.indexOf('css') !== -1) {
 				filepath = filepath + '.css';
-				haveExtension = true;
+				haveExtension = 'css';
 			}
 			// JSON
 			if (cType.indexOf('json') !== -1) {
 				filepath = filepath + '.json';
-				haveExtension = true;
+				haveExtension = 'json';
 			}
 			// Javascript
 			if (cType.indexOf('javascript') !== -1) {
 				filepath = filepath + '.js';
-				haveExtension = true;
+				haveExtension = 'js';
 			}
 			// HTML
 			if (cType.indexOf('html') !== -1) {
 				filepath = filepath + '.html';
-				haveExtension = true;
+				haveExtension = 'html';
 			}
 			
 			if (!haveExtension) {
 				filepath = filepath + '.html';
+				haveExtension = 'html';
 			}
 		} else {
 			// Add default html for text document
 			filepath = filepath + '.html';
+			haveExtension = 'html';
 		}
+		filename = filename + '.' + haveExtension;
+		console.log('File without extension: ',filename,filepath);
 	}
-	
-	console.log(filename,filepath);
 
 	// Remove path violation case
 	filepath = filepath
