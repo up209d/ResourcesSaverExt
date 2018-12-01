@@ -737,7 +737,7 @@ function downloadCompleteZip(blobWriter, callback) {
   chrome.tabs.get(
     chrome.devtools.inspectedWindow.tabId, function (tab) {
 			var url = new URL(tab.url);
-      var filename = url.hostname ? url.hostname.replace(/([^A-Za-z0-9])/g,"_") : 'all'; 
+      var filename = url.hostname ? url.hostname.replace(/([^A-Za-z0-9\.])/g,"_") : 'all'; 
 			var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
 			a.download = filename + '.zip';
