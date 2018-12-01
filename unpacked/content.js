@@ -284,32 +284,44 @@ function resolveURLToPath(cUrl,cType,cContent) {
 	// Add default extension to non extension filename
 	if (filename.search(/\./) === -1) {
 		if (cType && cContent) {
+			let haveExtension = false;
 			// Special Case for Images with Base64
 			if (cType.indexOf('image') !== -1) {
 				if(cContent.charAt(0)=='/'){
 					filepath = filepath + '.jpg';
+					haveExtension = true;
 				}
 				if(cContent.charAt(0)=='R'){
 					filepath = filepath + '.gif';
+					haveExtension = true;
 				}
 				if(cContent.charAt(0)=='i'){
 					filepath = filepath + '.png';
+					haveExtension = true;
 				}
 			}
 			// Stylesheet | CSS
 			if (cType.indexOf('stylesheet') !== -1 || cType.indexOf('css') !== -1) {
 				filepath = filepath + '.css';
+				haveExtension = true;
 			}
 			// JSON
 			if (cType.indexOf('json') !== -1) {
 				filepath = filepath + '.json';
+				haveExtension = true;
 			}
 			// Javascript
 			if (cType.indexOf('javascript') !== -1) {
 				filepath = filepath + '.js';
+				haveExtension = true;
 			}
 			// HTML
 			if (cType.indexOf('html') !== -1) {
+				filepath = filepath + '.html';
+				haveExtension = true;
+			}
+			
+			if (!haveExtension) {
 				filepath = filepath + '.html';
 			}
 		} else {
@@ -317,6 +329,8 @@ function resolveURLToPath(cUrl,cType,cContent) {
 			filepath = filepath + '.html';
 		}
 	}
+	
+	console.log(filename,filepath);
 
 	// Remove path violation case
 	filepath = filepath
@@ -657,7 +671,7 @@ function addItemsToZipWriter(blobWriter, items, callback) {
 		// Make sure the file has some byte otherwise no import to avoid corrupted zip
 		resolvedContent.init(function () {
 			if (resolvedContent.size > 0) {
-				console.log(resolvedContent.size, item.encoding || 'No Encoding', item.url);
+				console.log(resolvedContent.size, item.encoding || 'No Encoding', item.url, item.name);
 				blobWriter.add(item.url, resolvedContent,
 					function () {
 						// On Success, to the next item
@@ -699,37 +713,37 @@ function addItemsToZipWriter(blobWriter, items, callback) {
 	return rest;
 }
 
-//function downloadCompleteZip(blobWriter, callback) {
-//	// Close the writer and save it by dataURI
-//	blobWriter.close(function (blob) {
-//		chrome.downloads.download({
-//			url: URL.createObjectURL(blob),
-//			filename: 'All Resources/all.zip',
-//			saveAs: false
-//		}, function () {
-//			if (chrome.runtime.lastError) {
-//				callback(false);
-//			} else {
-//				callback(true);
-//			}
-//		});
-//	});
-//}
-
 function downloadCompleteZip(blobWriter, callback) {
-  blobWriter.close(function (blob) {
-  chrome.tabs.get(
-    chrome.devtools.inspectedWindow.tabId, function (tab) {
-			var url = new URL(tab.url);
-      var filename = url.hostname ? url.hostname.replace(/([^A-Za-z0-9\.])/g,"") : 'all'; 
-			var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-			a.download = filename + '.zip';
-			a.click();
-			callback(true);
-    });
-  })
+	// Close the writer and save it by dataURI
+	blobWriter.close(function (blob) {
+		chrome.downloads.download({
+			url: URL.createObjectURL(blob),
+			filename: 'All Resources/all.zip',
+			saveAs: false
+		}, function () {
+			if (chrome.runtime.lastError) {
+				callback(false);
+			} else {
+				callback(true);
+			}
+		});
+	});
 }
+
+//function downloadCompleteZip(blobWriter, callback) {
+//  blobWriter.close(function (blob) {
+//  chrome.tabs.get(
+//    chrome.devtools.inspectedWindow.tabId, function (tab) {
+//			var url = new URL(tab.url);
+//      var filename = url.hostname ? url.hostname.replace(/([^A-Za-z0-9])/g,"_") : 'all'; 
+//			var a = document.createElement('a');
+//      a.href = URL.createObjectURL(blob);
+//			a.download = filename + '.zip';
+//			a.click();
+//			callback(true);
+//    });
+//  })
+//}
 
 // Returns a function, that, as long as it continues to be invoked, will not
 // be triggered. The function will be called after it stops being called for
