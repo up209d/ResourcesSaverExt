@@ -715,37 +715,37 @@ function addItemsToZipWriter(blobWriter, items, callback) {
 	return rest;
 }
 
-function downloadCompleteZip(blobWriter, callback) {
-	// Close the writer and save it by dataURI
-	blobWriter.close(function (blob) {
-		chrome.downloads.download({
-			url: URL.createObjectURL(blob),
-			filename: 'All Resources/all.zip',
-			saveAs: false
-		}, function () {
-			if (chrome.runtime.lastError) {
-				callback(false);
-			} else {
-				callback(true);
-			}
-		});
-	});
-}
-
 //function downloadCompleteZip(blobWriter, callback) {
-//  blobWriter.close(function (blob) {
-//  chrome.tabs.get(
-//    chrome.devtools.inspectedWindow.tabId, function (tab) {
-//			var url = new URL(tab.url);
-//      var filename = url.hostname ? url.hostname.replace(/([^A-Za-z0-9])/g,"_") : 'all'; 
-//			var a = document.createElement('a');
-//      a.href = URL.createObjectURL(blob);
-//			a.download = filename + '.zip';
-//			a.click();
-//			callback(true);
-//    });
-//  })
+//	// Close the writer and save it by dataURI
+//	blobWriter.close(function (blob) {
+//		chrome.downloads.download({
+//			url: URL.createObjectURL(blob),
+//			filename: 'All Resources/all.zip',
+//			saveAs: false
+//		}, function () {
+//			if (chrome.runtime.lastError) {
+//				callback(false);
+//			} else {
+//				callback(true);
+//			}
+//		});
+//	});
 //}
+
+function downloadCompleteZip(blobWriter, callback) {
+  blobWriter.close(function (blob) {
+  chrome.tabs.get(
+    chrome.devtools.inspectedWindow.tabId, function (tab) {
+			var url = new URL(tab.url);
+      var filename = url.hostname ? url.hostname.replace(/([^A-Za-z0-9])/g,"_") : 'all'; 
+			var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+			a.download = filename + '.zip';
+			a.click();
+			callback(true);
+    });
+  })
+}
 
 // Returns a function, that, as long as it continues to be invoked, will not
 // be triggered. The function will be called after it stops being called for
