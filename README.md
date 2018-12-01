@@ -6,6 +6,10 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
+- 0.1.4: Change download file name into corresponding domain name instead of 'all.zip'
+
+- 0.1.3: Downloading issue potential fix
+
 - 0.1.2: File extension detector bug fixes.
 
 - 0.1.1: Beautify([js-beautify](https://github.com/beautify-web/js-beautify)) JS,HTML,CSS code before fetching.
