@@ -2,21 +2,26 @@ document.getElementById('refresh').addEventListener('click',function(){
 	window.location.reload(true);
 });
 
+console.log("Starting ", new Date() + "");
+const reqs = {};
+
 document.addEventListener('DOMContentLoaded', function () {
 	//	chrome.devtools.network.getHAR(function(logInfo){
-	//			console.log(logInfo);
-	//		});
-	//  reqs = []
+	//		console.log(logInfo);
+	//	});
 	chrome.devtools.network.onRequestFinished.addListener(function (req) {
-		//    req.getContent(function (body) {
-		//      reqs.push(Object.assign({},{body: body,url: req.request.url}));
-		//      console.log(reqs[reqs.length-1],reqs.length);
-		//      setResourceCount();
-		//    })
-		//    var resolvedURL = resolveURLToPath(req.request.url).path;
-		//      if (!reqs.includes(req.request.url)) {
-		//        reqs.push(req.request.url);
-		//      }
+
+		// This saves the content immediately in "reqs" because it may not available later
+		// (See https://groups.google.com/forum/#!topic/google-chrome-developer-tools/nQ4aVoKSsLE)
+		// NOTE: This may increase memory consumption of this extension a lot. 
+		//       The full solution would be probably to:
+		//			1. change the UI adding a "Record Requests" so this only happen when the user wants to download the page.
+		//          2. Use immediately chrome.downloads.download
+
+		req.getContent(function (content, encoding) {
+			reqs[req.request.url] = { content,  encoding };
+			console.log(reqs[reqs.length-1],reqs.length);
+		})
 		setResourceCount();
 	});
 
@@ -104,11 +109,25 @@ function getXHRs(callback) {
 	if (document.getElementById('check-xhr').checked) {
 		chrome.devtools.network.getHAR(function (logInfo) {
 			logInfo.entries.map(function (entry) {
-				xhrResources.push(Object.assign({}, entry.request, {
-					getContent: entry.getContent,
-					type: entry.response.content.mimeType || 'text/plain',
-					isStream: (entry.response.content.mimeType || '').indexOf('event-stream') !== -1
-				}));
+				let o;
+				const req = reqs[entry.request.url];
+				if ( req )  {
+					o = {
+						getContent: function (cb) {
+							cb(req.content, req.encoding);
+						},
+						type: req.encoding || 'text/plain',
+						isStream: (req.encoding || '').indexOf('event-stream') !== -1
+					};
+				} else {
+					o = {
+						getContent: entry.getContent,
+						type: entry.response.content.mimeType || 'text/plain',
+						isStream: (entry.response.content.mimeType || '').indexOf('event-stream') !== -1
+					};
+				}
+
+				xhrResources.push(Object.assign({}, entry.request, o));
 			})
 			callback(xhrResources);
 		});
@@ -560,7 +579,7 @@ function getAllToDownloadContent(toDownload, callback) {
 	// window.toDownload = toDownload;
 
 	toDownload.forEach(function (item, index) {
-		if (item.getContent && !!!item.isStream) {
+		if (item.getContent && !item.isStream) {
 			item.getContent(function (body, encode) {
 				if (chrome.runtime.lastError) {
 					console.log(chrome.runtime.lastError);
