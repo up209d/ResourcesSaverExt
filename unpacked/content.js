@@ -745,25 +745,60 @@ function addItemsToZipWriter(blobWriter, items, callback) {
 
     // Make sure the file has some byte otherwise no import to avoid corrupted zip
     resolvedContent.init(function () {
-      if (resolvedContent.size > 0 && !isNoContent) {
-        console.log(resolvedContent.size, item.encoding || 'No Encoding', item.url, item.name);
-        blobWriter.add(item.url, resolvedContent,
-          function () {
-            // On Success, to the next item
-            addItemsToZipWriter(blobWriter, rest, callback);
+      if (resolvedContent.size > 0) {
+        if (!isNoContent) {
+          console.log(resolvedContent.size, item.encoding || 'No Encoding', item.url, item.name);
+          blobWriter.add(item.url, resolvedContent,
+            function () {
+              // On Success, to the next item
+              addItemsToZipWriter(blobWriter, rest, callback);
+
+              // Update Status
+              document.getElementById('status').innerHTML = 'Compressed: ' + item.url;
+
+              // Update Report Table
+              newList.className = 'each-done';
+              newList.innerHTML = '<li>Added</li><li class="success">Done</li><li>' + item.url + '</li>';
+              reportElement.insertBefore(newList, reportElement.childNodes[0]);
+            },
+            function () {
+              // On Progress
+            }
+          );
+        } else {
+          if (document.getElementById('check-content').checked) {
+            blobWriter.add(item.url, resolvedContent,
+              function () {
+                // On Success, to the next item
+                addItemsToZipWriter(blobWriter, rest, callback);
+
+                // Update Status
+                document.getElementById('status').innerHTML = 'Compressed: ' + item.url;
+
+                // Update Report Table
+                newList.className = 'each-done';
+                newList.innerHTML = '<li>Added</li><li class="success"><b>No Content</b></li><li>' + item.url + '</li>';
+                reportFailedElement.insertBefore(newList, reportFailedElement.childNodes[0]);
+              },
+              function () {
+                // On Progress
+              }
+            );
+          } else {
+            console.log('EXCLUDED: ', item.url);
 
             // Update Status
-            document.getElementById('status').innerHTML = 'Compressed: ' + item.url;
+            document.getElementById('status').innerHTML = 'Excluded: ' + item.url;
 
             // Update Report Table
-            newList.className = 'each-done';
-            newList.innerHTML = '<li>Added</li><li class="success">Done</li><li>' + item.url + '</li>';
-            reportElement.insertBefore(newList, reportElement.childNodes[0]);
-          },
-          function () {
-            // On Progress
+            newList.className = 'each-failed';
+            newList.innerHTML = '<li>Ignored</li><li class="failed"><b>No Content</b></li><li>' + item.url + '</li>';
+            reportFailedElement.insertBefore(newList, reportFailedElement.childNodes[0]);
+
+            // To the next item
+            addItemsToZipWriter(blobWriter, rest, callback);
           }
-        );
+        }
       } else {
         // If no size, exclude the item
         console.log('EXCLUDED: ', item.url);
@@ -773,7 +808,7 @@ function addItemsToZipWriter(blobWriter, items, callback) {
 
         // Update Report Table
         newList.className = 'each-failed';
-        newList.innerHTML = '<li>Ignored</li><li class="failed">No Content</li><li>' + item.url + '</li>';
+        newList.innerHTML = '<li>Ignored</li><li class="failed">Request Failed</li><li>' + item.url + '</li>';
         reportFailedElement.insertBefore(newList, reportFailedElement.childNodes[0]);
 
         // To the next item
