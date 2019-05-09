@@ -1,3 +1,10 @@
+// Report Table
+var reportElement = document.createElement('div');
+var reportFailedElement = document.createElement('div');
+
+// Downloading Flag
+var isDownloading = false;
+
 // Resource Collector
 var reqs = {};
 
@@ -6,12 +13,14 @@ function resetResourceCollector() {
   reqs = {};
 }
 
+// Refresh Button
 document.getElementById('refresh').addEventListener('click', function () {
   // Reset Resource Collector
   resetResourceCollector();
   window.location.reload(true);
 });
 
+// Document Ready
 document.addEventListener('DOMContentLoaded', function () {
   //	chrome.devtools.network.getHAR(function(logInfo){
   //			console.log(logInfo);
@@ -104,10 +113,6 @@ document.addEventListener('DOMContentLoaded', function () {
     //    console.log('Resource Commited: ', resource.url);
   });
 });
-
-var reportElement = document.createElement('div');
-var reportFailedElement = document.createElement('div');
-var isDownloading = false;
 
 function tabCompleteHandler(tabId, changeInfo) {
   if (tabId === chrome.devtools.inspectedWindow.tabId && changeInfo.status === 'complete') {
