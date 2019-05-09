@@ -129,8 +129,8 @@ function getXHRs(callback) {
         if (reqs[entry.request.url]) {
           console.log('Found in Resource Collector: ', entry.request.url);
           xhrResources.push(Object.assign({}, entry.request, {
-            getContent: function(cb) {
-              cb(reqs[entry.request.url].body,reqs[entry.request.url].encoding);
+            getContent: function (cb) {
+              cb(reqs[entry.request.url].body, reqs[entry.request.url].encoding);
               return true;
             },
             type: entry.response.content.mimeType || 'text/plain',
@@ -319,7 +319,8 @@ function resolveURLToPath(cUrl, cType, cContent) {
   }
 
   // Get Rid of QueryString after ;
-  filepath = filepath.substring(0, filepath.lastIndexOf('/') + 1) + filename.split(';')[0];
+  filename = filename.split(';')[0];
+  filepath = filepath.substring(0, filepath.lastIndexOf('/') + 1) + filename;
 
   // Add default extension to non extension filename
   if (filename.search(/\./) === -1) {
@@ -582,7 +583,7 @@ function downloadZipFile(toDownload, callback) {
       zip.createWriter(new zip.BlobWriter(), function (blobWriter) {
         addItemsToZipWriter(blobWriter, result, downloadCompleteZip.bind(this, blobWriter, callback));
       }, function (err) {
-        console.log('ERROR: ', err, currentRest);
+        console.log('ERROR: ', err);
         // Continue on Error, error might lead to corrupted zip, so might need to escape here
         callback(false);
       });
@@ -597,19 +598,17 @@ function getAllToDownloadContent(toDownload, callback) {
   var result = [];
   var pendingDownloads = toDownload.length;
 
-  console.log(window.clone);
-
   toDownload.forEach(function (item, index) {
     if (item.getContent && !item.isStream) {
       // Give timeout of 5000ms for the callback,
       // if the getContent callback cannot return in time, we move on
-      var getContentTimeout = setTimeout(function(){
+      var getContentTimeout = setTimeout(function () {
         pendingDownloads--;
         // Callback when all done
         if (pendingDownloads === 0) {
           callback(result);
         }
-      },5000);
+      }, 5000);
 
       item.getContent(function (body, encode) {
         // Cancel the timeout above
@@ -634,23 +633,22 @@ function getAllToDownloadContent(toDownload, callback) {
           return currentItem.url === newURL;
         });
 
-
-
         // Only add to result when the url is unique
         if (foundIndex === -1) {
           result.push({
             name: filename,
             type: item.type || 'text/plain',
             originalUrl: item.url,
-            url: newURL,
+            url: newURL, // Actually the path
             content: resolvedItem.dataURI || body,
             encoding: currentEnconding
           });
         } else {
+          // console.log('XXX: ',newURL, item.url);
           // Otherwise add suffix to the path and filename
           var newFilename = filename.split('.')[0] + '-' + Math.random().toString(16).substring(2) + '.' + filename.split('.')[1];
-          var newPath = newURL.toString().replace(filename,newFilename);
-          console.log('Duplicated: ', newFilename, newPath);
+          var newPath = newURL.toString().replace(filename, newFilename);
+          console.log('Duplicated: ', newFilename, newPath , filename, newURL);
           result.push({
             name: newFilename,
             type: item.type || 'text/plain',
