@@ -6,6 +6,11 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
+- 0.1.5:
+    + Add Resource Collector for XHRs in case XHR getContent doesn't work later on [@ccinelli](https://github.com/ccinelli)
+    + Add timeout 5s for getContent function as in some case the getContent func take forever to run callback
+    + Resolve the filenames of XHRs request as some XHRs point to same url with different query string (filename filename(1) filename(2) ...)
+
 - 0.1.4: Change download file name into corresponding domain name instead of 'all.zip'
 
 - 0.1.3: Downloading issue potential fix
