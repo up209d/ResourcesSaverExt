@@ -6,6 +6,8 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
+- 0.1.6: Convert all asyn getContent to sync getContent before filtering and downloading
+
 - 0.1.5:
     + Add Resource Collector for XHRs in case XHR getContent doesn't work later on - [@ccinelli](https://github.com/ccinelli)
     + Add timeout 5s for getContent as in some case the getContent function take forever to run callback

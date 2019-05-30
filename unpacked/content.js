@@ -31,10 +31,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (document.getElementById('check-xhr').checked) {
       console.log('Resource Collector pushed: ', req.request.url);
       req.getContent(function (body, encoding) {
-        reqs[req.request.url] = {
-          body,
-          encoding
-        };
+        if (!body) {
+          console.log('No Content Detected!, Resource Collector will ignore: ', req.request.url);
+        } else {
+          reqs[req.request.url] = {
+            body,
+            encoding
+          };
+        }
         setResourceCount();
       });
       setResourceCount();
@@ -156,6 +160,32 @@ function getXHRs(callback) {
   }
 }
 
+// Convert all async getContent to sync getContent
+function processContentFromResources(combineResources, cb) {
+  var count = 0;
+  combineResources.forEach(function(item,index){
+    // Give timeout of 5000ms for the callback,
+    // if the getContent callback cannot return in time, we move on
+    var getContentTimeout = setTimeout(function () {
+      count++;
+      // Callback when all done
+      if (count === combineResources.length) {
+        cb(combineResources);
+      }
+    }, 5000);
+    item.getContent(function(body,encoding) {
+      clearTimeout(getContentTimeout);
+      combineResources[index].getContent = function(cb) {
+        cb(body,encoding);
+      };
+      count++;
+      if (count === combineResources.length) {
+        cb(combineResources);
+      }
+    });
+  })
+}
+
 function saveAllResources(e) {
   var toDownload = [];
   var downloadThread = 5;
@@ -191,48 +221,67 @@ function saveAllResources(e) {
         e.target.innerHTML = 'Downloading...';
         e.target.disabled = true;
 
-        var combineResources = xhrResources.concat(resources);
+        var allResources = xhrResources.concat(resources);
 
-        // Filter Resource here
-        if (document.getElementById('check-all').checked) {
-          for (i = 0; i < combineResources.length; i++) {
-            if (!combineResources[i].url.includes('Chrome/Default/Extensions')) {
-              // Make sure unique URL
-              if (toDownload.findIndex(function (item) {
-                return item.url === combineResources[i].url
-              }) === -1) {
-                toDownload.push(combineResources[i]);
+        processContentFromResources(allResources,function(combineResources){
+          // Filter Resource here
+          if (document.getElementById('check-all').checked) {
+            for (i = 0; i < combineResources.length; i++) {
+              if (!combineResources[i].url.includes('Chrome/Default/Extensions')) {
+                var foundIndex = toDownload.findIndex(function (item) {
+                  return item.url === combineResources[i].url
+                });
+                // Make sure unique URL
+                if (foundIndex === -1) {
+                  toDownload.push(combineResources[i]);
+                } else {
+                  // If the new one have content, replace with old one anyway
+                  var j = i;
+                  combineResources[j].getContent(function(body){
+                    if (!!body) {
+                      toDownload[foundIndex] = combineResources[j];
+                    }
+                  });
+                }
               }
             }
-          }
-        } else {
-          for (i = 0; i < combineResources.length; i++) {
-            if (!combineResources[i].url.includes('Chrome/Default/Extensions')) {
-              // Matching with current snippet URL
-              if (combineResources[i].url.indexOf('://' + domain) >= 0) {
-                // Make sure unique URL
-                if (toDownload.findIndex(function (item) {
-                  return item.url === combineResources[i].url
-                }) === -1) {
-                  toDownload.push(combineResources[i]);
+          } else {
+            for (i=0; i < combineResources.length; i++) {
+              if (!combineResources[i].url.includes('Chrome/Default/Extensions')) {
+                // Matching with current snippet URL
+                if (combineResources[i].url.indexOf('://' + domain) >= 0) {
+                  var foundIndex = toDownload.findIndex(function (item) {
+                    return item.url === combineResources[i].url
+                  });
+                  // Make sure unique URL
+                  if (foundIndex === -1) {
+                    toDownload.push(combineResources[i]);
+                  } else {
+                    // If the new one have content, replace with old one anyway
+                    var j = i;
+                    combineResources[j].getContent(function(body){
+                      if (!!body) {
+                        toDownload[foundIndex] = combineResources[j];
+                      }
+                    });
+                  }
                 }
               }
             }
           }
-        }
 
-        console.log('Combine Resource: ', combineResources);
-        console.log('Download List: ', toDownload);
+          console.log('Combine Resource: ', combineResources);
+          console.log('Download List: ', toDownload);
 
-        if (document.getElementById('check-zip').checked) {
-          // No need to turn off notification for only one zip file
-          chrome.downloads.setShelfEnabled(true);
+          if (document.getElementById('check-zip').checked) {
+            // No need to turn off notification for only one zip file
+            chrome.downloads.setShelfEnabled(true);
 
-          downloadZipFile(toDownload, allDone);
-        } else {
-          downloadListWithThread(toDownload, downloadThread, allDone);
-        }
-
+            downloadZipFile(toDownload, allDone);
+          } else {
+            downloadListWithThread(toDownload, downloadThread, allDone);
+          }
+        });
       });
     })
   });
@@ -329,7 +378,7 @@ function resolveURLToPath(cUrl, cType, cContent) {
 
   // Add default extension to non extension filename
   if (filename.search(/\./) === -1) {
-    let haveExtension = null;
+    var haveExtension = null;
     if (cType && cContent) {
       // Special Case for Images with Base64
       if (cType.indexOf('image') !== -1) {
