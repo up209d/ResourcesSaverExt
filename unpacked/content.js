@@ -436,6 +436,9 @@ function resolveURLToPath(cUrl, cType, cContent) {
     .replace(/(\s|\.)\//g, '/')
     .replace(/\/(\s|\.)/g, '/');
 
+  filename = filename
+    .replace(/\:|\\|\=|\*|\.$|\"|\'|\?|\~|\||\<|\>/g, '')
+
   // Decode URI
   if (filepath.indexOf('%') !== -1) {
     try {
@@ -633,9 +636,20 @@ function downloadZipFile(toDownload, callback) {
   if (zip) {
     zip.workerScriptsPath = "zip/";
     getAllToDownloadContent(toDownload, function (result) {
-      console.log(result);
+      console.log('All ToDownload: ',result);
+      // window.alll = result;
+      //Double check duplicated
+      var newResult = [];
+      result.forEach((item) => {
+        if (newResult.findIndex(i => i.url === item.url) === -1) {
+          newResult.push(item);
+        } else {
+          console.log('Final Duplicated: ', item.url);
+        }
+      });
+
       zip.createWriter(new zip.BlobWriter(), function (blobWriter) {
-        addItemsToZipWriter(blobWriter, result, downloadCompleteZip.bind(this, blobWriter, callback));
+        addItemsToZipWriter(blobWriter, newResult, downloadCompleteZip.bind(this, blobWriter, callback));
       }, function (err) {
         console.log('ERROR: ', err);
         // Continue on Error, error might lead to corrupted zip, so might need to escape here
@@ -698,11 +712,12 @@ function getAllToDownloadContent(toDownload, callback) {
             encoding: currentEnconding
           });
         } else {
-          // console.log('XXX: ',newURL, item.url);
+          console.log('XXX: ',newURL, item.url);
           // Otherwise add suffix to the path and filename
           var newFilename = filename.split('.')[0] + '-' + Math.random().toString(16).substring(2) + '.' + filename.split('.')[1];
           var newPath = newURL.toString().replace(filename, newFilename);
           console.log('Duplicated: ', newFilename, newPath , filename, newURL);
+          console.log(filename + ' ------- ' + newURL);
           result.push({
             name: newFilename,
             type: item.type || 'text/plain',
@@ -720,6 +735,7 @@ function getAllToDownloadContent(toDownload, callback) {
 
         // Callback when all done
         if (pendingDownloads === 0) {
+          // window.alll = result;
           callback(result);
         }
 
