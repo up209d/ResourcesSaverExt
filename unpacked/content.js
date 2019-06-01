@@ -636,7 +636,7 @@ function downloadZipFile(toDownload, callback) {
   if (zip) {
     zip.workerScriptsPath = "zip/";
     getAllToDownloadContent(toDownload, function (result) {
-      console.log('All ToDownload: ',result);
+      // console.log('All ToDownload: ',result);
       // window.alll = result;
       //Double check duplicated
       var newResult = [];
@@ -644,7 +644,7 @@ function downloadZipFile(toDownload, callback) {
         if (newResult.findIndex(i => i.url === item.url) === -1) {
           newResult.push(item);
         } else {
-          console.log('Final Duplicated: ', item.url);
+          // console.log('Final Duplicated: ', item.url);
         }
       });
 
@@ -712,12 +712,12 @@ function getAllToDownloadContent(toDownload, callback) {
             encoding: currentEnconding
           });
         } else {
-          console.log('XXX: ',newURL, item.url);
+          // console.log('XXX: ',newURL, item.url);
           // Otherwise add suffix to the path and filename
           var newFilename = filename.split('.')[0] + '-' + Math.random().toString(16).substring(2) + '.' + filename.split('.')[1];
           var newPath = newURL.toString().replace(filename, newFilename);
           console.log('Duplicated: ', newFilename, newPath , filename, newURL);
-          console.log(filename + ' ------- ' + newURL);
+          // console.log(filename + ' ------- ' + newURL);
           result.push({
             name: newFilename,
             type: item.type || 'text/plain',
