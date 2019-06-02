@@ -273,6 +273,8 @@ function saveAllResources(e) {
           console.log('Combine Resource: ', combineResources);
           console.log('Download List: ', toDownload);
 
+          // window.alll = toDownload;
+
           if (document.getElementById('check-zip').checked) {
             // No need to turn off notification for only one zip file
             chrome.downloads.setShelfEnabled(true);
@@ -365,7 +367,8 @@ function resolveURLToPath(cUrl, cType, cContent) {
     filepath = '_DataURI/' + filename;
   } else {
     isDataURI = false;
-    filepath = cUrl.split('://')[1].split('?')[0];
+    // filepath = cUrl.split('://')[1].split('?')[0];
+    filepath = cUrl.replace('://','---').split('?')[0];
     if (filepath.charAt(filepath.length - 1) === '/') {
       filepath = filepath + 'index.html';
     }
@@ -448,6 +451,16 @@ function resolveURLToPath(cUrl, cType, cContent) {
       console.log(err);
     }
   }
+
+  // Strip double slashes
+  while (filepath.includes('//')) {
+    filepath = filepath.replace('//','/');
+  }
+
+  // // Strip the first slash '/src/...' -> 'src/...'
+  // if (filepath.charAt(0) === '/') {
+  //   filepath = filepath.slice(1);
+  // }
 
   //  console.log('Save to: ', filepath);
   //  console.log('File name: ',filename);
