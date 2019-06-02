@@ -367,8 +367,13 @@ function resolveURLToPath(cUrl, cType, cContent) {
     filepath = '_DataURI/' + filename;
   } else {
     isDataURI = false;
-    // filepath = cUrl.split('://')[1].split('?')[0];
-    filepath = cUrl.replace('://','---').split('?')[0];
+    if (cUrl.split('://')[0].includes('http')) {
+      // For http:// https://
+      filepath = cUrl.split('://')[1].split('?')[0];
+    } else {
+      // For webpack:// ng:// ftp://
+      filepath = cUrl.replace('://','---').split('?')[0];
+    }
     if (filepath.charAt(filepath.length - 1) === '/') {
       filepath = filepath + 'index.html';
     }
