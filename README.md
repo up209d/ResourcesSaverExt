@@ -6,7 +6,11 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
-- 0.1.6: Convert all asyn getContent to sync getContent before filtering and downloading
+- 0.1.8: fixed zip file uncompressing with missing path issue in Window
+
+- 0.1.7: fixed Url to Path converting bug
+
+- 0.1.6: Convert all async getContent to sync getContent before filtering and downloading
 
 - 0.1.5:
     + Add Resource Collector for XHRs in case XHR getContent doesn't work later on - [@ccinelli](https://github.com/ccinelli)
