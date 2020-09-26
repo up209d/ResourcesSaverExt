@@ -4,4 +4,6 @@ bower_components
 test/bower_components
 .DS_Store
 .idea
-unpacked-ff
+*.log
+.cache
+dist
