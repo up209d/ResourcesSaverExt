@@ -1,5 +1,6 @@
 import * as networkResourceActions from 'app/store/networkResource';
 import * as staticResourceActions from 'app/store/staticResource';
+import { resolveURLToPath } from './file';
 
 export const processNetworkResourceToStore = (dispatch, req) => {
   req.getContent((content, encoding) => {
@@ -11,14 +12,15 @@ export const processNetworkResourceToStore = (dispatch, req) => {
     const contentTypeHeader = req.response && req.response.headers && req.response.headers.find(i => i.name.toLowerCase().includes('content-type'));
     const contentTypeMatches = contentTypeHeader && contentTypeHeader.value && contentTypeHeader.value.match(/^(?<contentType>.*?);/);
     const contentType = contentTypeMatches && contentTypeMatches.groups && contentTypeMatches.groups.contentType;
-
+    const type = uriDataType || mimeType || contentType;
     dispatch(
       networkResourceActions.addNetworkResource({
         url: req.request.url,
-        type: uriDataType || mimeType || contentType,
+        type,
         content,
         encoding,
         origin: req,
+        saveAs: resolveURLToPath(req.request.url, type, content),
       })
     );
   });
@@ -34,6 +36,7 @@ export const processStaticResourceToStore = (dispatch, res) => {
           content,
           encoding,
           origin: res,
+          saveAs: resolveURLToPath(res.url, res.type, content),
         })
       );
     });

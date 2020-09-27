@@ -10,7 +10,7 @@
     "dev": "yarn cp && parcel watch ./src/index.html --out-dir unpacked2x",
     "dev-serve": "yarn cp && parcel ./src/index.html --port 20987 --out-dir unpacked2x",
     "build": "yarn cp && parcel build ./src/index.html --out-dir unpacked2x",
-    "cp": "mkdir -p unpacked2x && cp -r ./src/static/* unpacked2x",
+    "cp": "yarn clean && mkdir -p unpacked2x && cp -r ./src/static/* unpacked2x",
     "clean": "rm -rf unpacked2x",
     "reset": "yarn clean && rm -rf ./.cache",
     "local": "rm -rf ./node_modules/parcel-plugin-local && yarn install --check-files && yarn reset"
@@ -42,7 +42,7 @@
     "@babel/preset-env": "^7.6.3",
     "@babel/preset-react": "^7.6.3",
     "parcel-bundler": "^1.12.4",
-    "parcel-plugin-local": "file:./parcel-plugin",
+    "parcel-plugin-local-collection": "file:./plugins",
     "sass": "^1.23.0"
   }
 }

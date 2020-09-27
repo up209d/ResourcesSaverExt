@@ -1,67 +1,11 @@
-// Convert all async getContent to sync getContent
-export function processContentFromResources(combineResources, cb) {
-  let count = 0;
-  combineResources.forEach(function(item, index) {
-    // Give timeout of 5000ms for the callback,
-    // if the getContent callback cannot return in time, we move on
-    let getContentTimeout = setTimeout(function() {
-      count++;
-      // Callback when all done
-      if (count === combineResources.length) {
-        cb(combineResources);
-      }
-    }, 5000);
-    item.getContent(function(body, encoding) {
-      clearTimeout(getContentTimeout);
-      combineResources[index].getContent = function(cb) {
-        cb(body, encoding);
-      };
-      count++;
-      if (count === combineResources.length) {
-        cb(combineResources);
-      }
-    });
-  });
-}
-
-export function downloadCompleteZip(blobWriter, callback) {
-  blobWriter.close(function(blob) {
-    chrome.tabs.get(chrome.devtools.inspectedWindow.tabId, function(tab) {
-      let url = new URL(tab.url);
-      let filename = url.hostname ? url.hostname.replace(/([^A-Za-z0-9.])/g, '_') : 'all';
-      let a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = filename + '.zip';
-      a.click();
-      callback(true);
-    });
-  });
-}
-
-export function debounce(func, wait, immediate) {
-  let timeout;
-  return function() {
-    let context = this,
-      args = arguments;
-    let later = function() {
-      timeout = null;
-      if (!immediate) func.apply(context, args);
-    };
-    let callNow = immediate && !timeout;
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-    if (callNow) func.apply(context, args);
-  };
-}
-
-export function resolveURLToPath(cUrl, cType, cContent) {
+export const resolveURLToPath = (cUrl, cType, cContent) => {
   let filepath, filename, isDataURI;
   let foundIndex = cUrl.search(/:\/\//);
   // Check the url whether it is a link or a string of text data
   if (foundIndex === -1 || foundIndex >= 10) {
     isDataURI = true;
     console.log('Data URI Detected!!!!!');
-
+    // Data URI
     if (cUrl.indexOf('data:') === 0) {
       let dataURIInfo = cUrl
         .split(';')[0]
@@ -84,7 +28,6 @@ export function resolveURLToPath(cUrl, cType, cContent) {
           .substring(2) +
         '.txt';
     }
-
     filepath = '_DataURI/' + filename;
   } else {
     isDataURI = false;
@@ -92,7 +35,7 @@ export function resolveURLToPath(cUrl, cType, cContent) {
       // For http:// https://
       filepath = cUrl.split('://')[1].split('?')[0];
     } else {
-      // For webpack:// ng:// ftp://
+      // For webpack:// ng:// ftp:// will be webpack--- ng--- ftp---
       filepath = cUrl.replace('://', '---').split('?')[0];
     }
     if (filepath.charAt(filepath.length - 1) === '/') {
@@ -122,6 +65,10 @@ export function resolveURLToPath(cUrl, cType, cContent) {
         if (cContent.charAt(0) === 'i') {
           filepath = filepath + '.png';
           haveExtension = 'png';
+        }
+        if (cContent.charAt(0) === 'U') {
+          filepath = filepath + '.webp';
+          haveExtension = 'webp';
         }
       }
       // Stylesheet | CSS
@@ -154,8 +101,8 @@ export function resolveURLToPath(cUrl, cType, cContent) {
       filepath = filepath + '.html';
       haveExtension = 'html';
     }
+    console.log('File without extension: ', filename, 'Will process as: ', filename + '.' + haveExtension, filepath);
     filename = filename + '.' + haveExtension;
-    console.log('File without extension: ', filename, filepath);
   }
 
   // Remove path violation case
@@ -195,4 +142,42 @@ export function resolveURLToPath(cUrl, cType, cContent) {
     name: filename,
     dataURI: isDataURI && cUrl,
   };
-}
+};
+
+export const resolveDuplicatedResources = (resourceList = []) => {
+  const resolvedListByKey = {};
+  const result = [];
+  resourceList
+    .filter(r => r && r.saveAs && r.saveAs.path && r.saveAs.name)
+    .sort((rA, rB) => rA.saveAs.path.localeCompare(rB.saveAs.path))
+    .forEach(r => resolvedListByKey[r.saveAs.path] = (resolvedListByKey[r.saveAs.path] || []).concat([r]));
+  Object.values(resolvedListByKey).forEach(rGroup => {
+    result.push(...rGroup.length < 2 ?
+      rGroup :
+      rGroup
+        .map((r, rIndex) => rIndex === 0 ? r : {
+          ...r,
+          saveAs: {
+            ...r.saveAs,
+            name: r.saveAs.name.replace(/(\.)(?!.*\.)/g, ` (${rIndex}).`),
+            path: r.saveAs.path.replace(/(\.)(?!.*\.)/g, ` (${rIndex}).`),
+          },
+        }));
+  });
+  return result;
+};
+
+
+export const downloadCompleteZip = (blobWriter, callback) => {
+  blobWriter.close(function(blob) {
+    chrome.tabs.get(chrome.devtools.inspectedWindow.tabId, function(tab) {
+      let url = new URL(tab.url);
+      let filename = url.hostname ? url.hostname.replace(/([^A-Za-z0-9.])/g, '_') : 'all';
+      let a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename + '.zip';
+      a.click();
+      callback(true);
+    });
+  });
+};

@@ -3972,7 +3972,7 @@ parcel-bundler@^1.12.4:
     v8-compile-cache "^2.0.0"
     ws "^5.1.1"
 
-"parcel-plugin-local@file:./parcel-plugin":
+"parcel-plugin-local-collection@file:./plugins":
   version "0.0.0"
   dependencies:
     minimatch "^3.0.4"

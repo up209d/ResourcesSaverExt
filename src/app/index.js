@@ -20,8 +20,22 @@ export const App = props => {
   }, [theme]);
 
   useEffect(() => {
+    //Get all HARs that were already captured
+    chrome.devtools.network.getHAR(logInfo => {
+      if (logInfo && logInfo.entries && logInfo.entries.length) {
+        logInfo.entries.forEach(req => processNetworkResourceToStore(dispatch, req));
+      }
+    });
+
     //This can be used for detecting when a request is finished
     chrome.devtools.network.onRequestFinished.addListener(req => processNetworkResourceToStore(dispatch, req));
+
+    //Get all resources that were already cached
+    chrome.devtools.inspectedWindow.getResources(resources => {
+      if (resources && resources.length) {
+        resources.forEach(res => processStaticResourceToStore(dispatch, res));
+      }
+    });
 
     //This can be used for identifying when ever a new resource is added
     chrome.devtools.inspectedWindow.onResourceAdded.addListener(res => processStaticResourceToStore(dispatch, res));
