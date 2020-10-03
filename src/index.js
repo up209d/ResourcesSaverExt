@@ -4,16 +4,11 @@ import 'reset-css/reset.css';
 import './index.scss';
 import App from './app';
 
-window.onload = () => {
+// window.onload = () => {};
+
+chrome.tabs.get(chrome.devtools.inspectedWindow.tabId, function(initialTab) {
+  ReactDOM.render(<App initialTab={initialTab} theme={window.theme} />, document.getElementById('root'));
   setTimeout(() => {
-    ReactDOM.render(
-      <App theme={window.theme} />,
-      document.getElementById('root')
-    );
-    setTimeout(() => {
-      document
-        .getElementById('preload')
-        .setAttribute('data-hidden', '');
-    }, 500);
-  });
-};
+    document.getElementById('preload').setAttribute('data-hidden', '');
+  }, 150);
+});

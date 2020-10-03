@@ -4,15 +4,17 @@ import { ThemeProvider } from 'styled-components';
 import { Wrapper } from 'app/styles';
 import Header from 'app/components/Header';
 import Status from 'app/components/Status';
-import useStore from 'app/store';
+import { useStore, StoreContext } from 'app/store';
 import * as staticResourceActions from 'app/store/staticResource';
 import * as networkResourceActions from 'app/store/networkResource';
 import { processNetworkResourceToStore, processStaticResourceToStore } from 'app/utils/resource';
+import DownloadList from './components/DownloadList';
+import * as uiActions from './store/ui';
+import * as downloadListActions from './store/downloadList';
 
 export const App = props => {
-  const { theme } = props;
-  const [state, dispatch] = useStore();
-  const { staticResource, networkResource } = state;
+  const { theme, initialTab } = props;
+  const [state, dispatch, store] = useStore();
   const currentTheme = useMemo(() => getTheme(theme), [theme]);
 
   useEffect(() => {
@@ -47,18 +49,38 @@ export const App = props => {
       dispatch(staticResourceActions.resetStaticResource());
       dispatch(networkResourceActions.resetNetworkResource());
     };
-  }, []);
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (initialTab) {
+      dispatch(uiActions.setTab(initialTab));
+      dispatch(
+        downloadListActions.replaceDownloadItem(
+          {
+            url: initialTab.url,
+          },
+          0,
+          true
+        )
+      );
+    }
+  }, [initialTab, dispatch])
+
+  const handleSave = useMemo(() => res => console.log(res), []);
 
   window.debugState = state;
   window.debugTheme = currentTheme;
 
   return (
-    <ThemeProvider theme={currentTheme}>
-      <Wrapper>
-        <Header />
-        <Status staticResource={staticResource} networkResource={networkResource} />
-      </Wrapper>
-    </ThemeProvider>
+    <StoreContext.Provider value={store}>
+      <ThemeProvider theme={currentTheme}>
+        <Wrapper>
+          <Header onSave={handleSave} />
+          <Status />
+          <DownloadList />
+        </Wrapper>
+      </ThemeProvider>
+    </StoreContext.Provider>
   );
-}
+};
 export default App;

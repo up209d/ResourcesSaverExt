@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { adjustHue } from 'polished';
-import { ELASTIC_BEZIER } from '/app/styles';
+import { ELASTIC_BEZIER } from 'app/styles';
 
 export const InputListWrapper = styled.button`
     border: 0;

@@ -21,26 +21,27 @@
 }
 
 @keyframes dimming {
-	0% {
-		opacity: 1;
-		transform: scale(1);
-	}
-	50% {
-		opacity: 0.85;
-		transform: scale(0.95);
-	}
-	100% {
-		opacity: 1;
-		transform: scale(1);
-	}
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-html, body {
+html,
+body {
   font-family: 'Dosis-Book', Helvetica, Tahoma, sans-serif;
   font-weight: 400;
   font-size: 14px;
-	letter-spacing: 0.25px;
-    background: #FFFFFF;
+  letter-spacing: 0.25px;
+  background: #ffffff;
 }
 
 * {
@@ -59,20 +60,21 @@ ul li {
   padding: 0 0 10px 0;
 }
 
-input[type=checkbox] {
+input[type='checkbox'] {
   width: 15px;
   height: 15px;
   cursor: pointer;
 }
 
-label, button {
+label,
+button {
   cursor: pointer;
 }
 
 a {
   outline: none;
   text-decoration: none;
-  transition: all .3s ease-out;
+  transition: all 0.3s ease-out;
   color: green;
 }
 a:visited {
@@ -87,7 +89,7 @@ a:hover {
 }
 
 .popup-body {
-  background-color: #EEE;
+  background-color: #eee;
 }
 
 .up-popup {
@@ -95,7 +97,7 @@ a:hover {
   padding: 15px 25px 15px 15px;
   border-radius: 3px;
   margin: 5px;
-  box-shadow: #EEE 0px 0px 0px 5px;
+  box-shadow: #eee 0px 0px 0px 5px;
   background-color: white;
   animation: fadeInDown 1s both cubic-bezier(0.1, 0.71, 0.28, 1.14) 0s 1;
 }
@@ -107,7 +109,7 @@ a:hover {
 .up-popup .heading::after {
   width: 100%;
   height: 2px;
-  background-color: #EEE;
+  background-color: #eee;
   position: absolute;
   content: '';
   bottom: 0;
@@ -169,14 +171,14 @@ a:hover {
 .up-content {
   padding: 30px;
   text-align: left;
-	min-width: 380px;
+  min-width: 380px;
 }
 .up-content h1 {
   padding: 10px 0;
-  border-bottom: 1px solid #EEE;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .up-content h1 button {
   margin-left: 10px;
@@ -192,21 +194,21 @@ a:hover {
   background-color: #2aa32a;
   color: white;
   padding: 3px 5px;
-  transition: all .3s ease-out;
+  transition: all 0.3s ease-out;
   animation: fadeInLeft 1s both cubic-bezier(0.1, 0.71, 0.28, 1.14) 0s 1;
 }
 .up-content button:hover {
   background-color: #185bd3;
 }
 .up-content button[disabled] {
-	animation: dimming 2s both ease-in-out 0s infinite;
+  animation: dimming 2s both ease-in-out 0s infinite;
   background-color: #222222;
 }
 .up-content #debug p {
-  background-color: #EEE;
+  background-color: #eee;
   padding: 15px;
   transition: all 0.5s cubic-bezier(0.1, 0.71, 0.28, 1.14);
-  border-bottom: 2px solid #FFF;
+  border-bottom: 2px solid #fff;
   animation: fadeInDown 1s both cubic-bezier(0.1, 0.71, 0.28, 1.14) 0s 1;
 }
 .up-content #debug p.all-done {
@@ -248,73 +250,70 @@ a:hover {
 }
 
 #refresh {
-	position: absolute;
-	top: 45px;
-	left: 218px;
-	padding: 5px;
-	border-radius: 50%;
-	cursor: pointer;
-	transition: all .3s ease-out;
+  position: absolute;
+  top: 45px;
+  left: 218px;
+  padding: 5px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
 }
 
 #refresh #refresh-tip {
-	display: block;
-	position:absolute;
-	font-size: 11px;
-	width: 200px;
-	left: -90px;
-	top: -20px;
-	padding: 5px 5px 5px 10px;
-	background-color: indianred;
-	color: white;
-	opacity: 0;
-	transition: all .5s cubic-bezier(0.1, 0.71, 0.28, 1.14);
+  display: block;
+  position: absolute;
+  font-size: 11px;
+  width: 200px;
+  left: -90px;
+  top: -20px;
+  padding: 5px 5px 5px 10px;
+  background-color: indianred;
+  color: white;
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.1, 0.71, 0.28, 1.14);
 }
 
 #refresh img {
-	transition: all .3s cubic-bezier(0.1, 0.71, 0.28, 1.14);
+  transition: all 0.3s cubic-bezier(0.1, 0.71, 0.28, 1.14);
 }
 
 #refresh:hover {
-	background-color: rgba(0,0,0,0.1);
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 #refresh:hover #refresh-tip {
-	top: -32px;
-	opacity: 1;
+  top: -32px;
+  opacity: 1;
 }
 
 #refresh:hover img {
-	transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 
-
-
 #up-save {
-	
 }
 
 #status {
   margin-bottom: 10px;
-	background-color: #EFEFEF;
-	padding: 10px 10px 10px 15px;
-	word-break: break-all;
-	word-wrap: break-word;
+  background-color: #efefef;
+  padding: 10px 10px 10px 15px;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
 #open-folder {
-	margin: 10px 0 0 0;
-	padding: 20px 0;
-	border-top: 1px dashed #EFEFEF;
+  margin: 10px 0 0 0;
+  padding: 20px 0;
+  border-top: 1px dashed #efefef;
 }
 
 #version {
-	font-size:9px;
-	position:absolute;
-	top: 30px;
-	left: 30px;
-	color: green;
-	pointer-events: none;
+  font-size: 9px;
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  color: green;
+  pointer-events: none;
 }
 
 .success {

@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { withTheme } from 'styled-components';
-import { StatusWrapper } from './styles';
+import { StatusWrapper, CountWrapper, StatusMessage } from './styles';
+import { StoreContext } from 'app/store';
 
-export const Status = props => {
-  const { staticResource = [], networkResource = [] } = props;
+export const Status = () => {
+  const { state } = useContext(StoreContext);
+  const { staticResource, networkResource, ui: { status } } = state;
   return (
     <StatusWrapper>
-      {staticResource && <span>Static Resources: {staticResource.length}</span>}
-      {networkResource && <span>Network Resources: {networkResource.length}</span>}
+      <CountWrapper>
+        {staticResource && <span>Static Resources: {staticResource.length}</span>}
+        {networkResource && <span>Network Resources: {networkResource.length}</span>}
+      </CountWrapper>
+      <StatusMessage>
+        <span>{status}</span>
+      </StatusMessage>
     </StatusWrapper>
   );
-}
+};
 
 export default withTheme(Status);

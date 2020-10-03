@@ -13,17 +13,41 @@ export const THEME_KEYS = {
   DARK: 'dark',
 };
 
+export const getShade = (value, baseShade, factor) => (factor > 0 ? darken : lighten)(value, baseShade);
+
 export const utils = (theme, baseShade) => {
-  const isDarkTheme = theme === THEME_KEYS.DARK;
-  const getShade = value => (isDarkTheme ? lighten : darken)(value, baseShade);
+  const factor = theme === THEME_KEYS.DARK ? -1 : 1;
   return {
     white: colors.white,
     black: colors.black,
     background: baseShade,
-    text: getShade(0.9),
+    text: getShade(0.9, baseShade, factor),
     buttonBorderRadius: 3,
-    getShade,
-  }
+    getShade: value => getShade(value, baseShade, factor),
+  };
+};
+
+export const setGreyscale = (baseShade, factor, stepCount = 30) => {
+  return {
+    ...Array(stepCount + 1)
+      .fill(0)
+      .map((i, index) => ({
+        index,
+        progress: (factor > 0 ? stepCount - index : index) / stepCount,
+      }))
+      .reduce(
+        (scaleCollection, scale) => ({
+          ...scaleCollection,
+          [`gray${scale.index}`]: getShade(scale.progress, baseShade, factor),
+        }),
+        {}
+      ),
+  };
+};
+
+export const BASE_SHADE = {
+  [THEME_KEYS.LIGHT]: colors.white,
+  [THEME_KEYS.DARK]: setLightness(0.2, colors.black),
 };
 
 export const THEMES = {
@@ -33,7 +57,9 @@ export const THEMES = {
     primary: colors.blue,
     secondary: colors.green,
     danger: colors.red,
-    ...utils(THEME_KEYS.LIGHT, colors.white),
+    ...utils(THEME_KEYS.LIGHT, BASE_SHADE[THEME_KEYS.LIGHT]),
+    grayScale: setGreyscale(BASE_SHADE[THEME_KEYS.LIGHT], 1),
+    base: BASE_SHADE[THEME_KEYS.LIGHT],
   },
   [THEME_KEYS.DARK]: {
     name: THEME_KEYS.DARK,
@@ -41,10 +67,10 @@ export const THEMES = {
     primary: colors.blue,
     secondary: colors.green,
     danger: colors.red,
-    ...utils(THEME_KEYS.DARK, setLightness(0.2, colors.black)),
+    ...utils(THEME_KEYS.DARK, BASE_SHADE[THEME_KEYS.DARK]),
+    grayScale: setGreyscale(BASE_SHADE[THEME_KEYS.DARK], -1),
+    base: setLightness(0.2, BASE_SHADE[THEME_KEYS.DARK]),
   },
 };
-
-window.setLightness = setLightness;
 
 export const getTheme = key => THEMES[key] || THEMES[THEME_KEYS.LIGHT];

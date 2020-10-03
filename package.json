@@ -13,7 +13,8 @@
     "cp": "yarn clean && mkdir -p unpacked2x && cp -r ./src/static/* unpacked2x",
     "clean": "rm -rf unpacked2x",
     "reset": "yarn clean && rm -rf ./.cache",
-    "local": "rm -rf ./node_modules/parcel-plugin-local && yarn install --check-files && yarn reset"
+    "local": "rm -rf ./node_modules/parcel-plugin-local && yarn install --check-files && yarn reset",
+    "prettier": "yarn prettier"
   },
   "alias": {
     "app": "./src/app",

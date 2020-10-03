@@ -1,28 +1,19 @@
 {
-	"name": "Save All Resources",
-	"version": "2.0.0",
-	"description": "UP - Save all resources files with retaining folder structure.",
-	"icons": {
+  "name": "Save All Resources",
+  "version": "2.0.0",
+  "description": "UP - Save all resources files with retaining folder structure.",
+  "icons": {
     "128": "icon.gif"
-	},
-	"browser_action": {
+  },
+  "browser_action": {
     "default_icon": "icon.gif",
-		"default_title": "UP",
-		"default_popup": "popup.html"
+    "default_title": "UP",
+    "default_popup": "popup.html"
   },
-	"background": {
-		"scripts": [
-			"background.js"
-		]
+  "background": {
+    "scripts": ["background.js"]
   },
-	"permissions": [
-		"tabs",
-		"http://*/",
-    "https://*/",
-		"*://*/*",
-		"downloads",
-		"downloads.shelf"
-	],
-	"devtools_page": "devtool.html",
-	"manifest_version": 2
+  "permissions": ["tabs", "http://*/", "https://*/", "*://*/*", "downloads", "downloads.shelf"],
+  "devtools_page": "devtool.html",
+  "manifest_version": 2
 }
