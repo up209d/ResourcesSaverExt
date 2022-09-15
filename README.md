@@ -52,15 +52,16 @@ https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablah
 
 - 0.0.1: Download all webpages by re-dowloading them from resource-urls.
 
-v1
+### v1
+<img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot.png?raw=true" width="450" />
 
-![alt text](https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot.png?raw=true)
+### v2
+<div>
+    <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-dark.png?raw=true" width="300" />
+    <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-modal.png?raw=true" width="300" />
+    <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-report.png?raw=true" width="300" />
+</div>
 
-v2
-![alt text](https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-dark.png?raw=true)
-![alt text](https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-modal.png?raw=true)
-![alt text](https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-report.png?raw=true)
+### Output results with same structure as online sources:
+<img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot2.png?raw=true" width="450" />
 
-Output results with same structure as online sources:
-
-![alt text](https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot2.png?raw=true)
