@@ -1,0 +1,56 @@
+{
+  "name": "resources-saver-extension",
+  "version": "2.0.0",
+  "description": "Chrome extension for one click downloading all resources!",
+  "browserslist": [
+    "> 0.5%, last 2 versions, not dead"
+  ],
+  "repository": "git@github.com:up209d/ResourcesSaverExt.git",
+  "author": "up209d <up209d@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "yarn cp && parcel watch ./src/*.html --no-hmr --dist-dir unpacked2x",
+    "dev-serve": "yarn cp && parcel ./src/*.html --port 20987 --dist-dir unpacked2x",
+    "build": "yarn cp && parcel build ./src/*.html --dist-dir unpacked2x",
+    "cp": "yarn clean && mkdir -p unpacked2x && cp -r ./src/static/* unpacked2x",
+    "clean": "rm -rf dist && rm -rf unpacked2x",
+    "reset": "yarn clean && rm -rf ./.cache && rm -rf ./.parcel-cache",
+    "local": "rm -rf ./node_modules/parcel-plugin-local && yarn install --check-files && yarn reset",
+    "prettier": "yarn prettier"
+  },
+  "alias": {
+    "devtoolApp": "./src/devtoolApp",
+    "components": "./src/components"
+  },
+  "parcelExternals": [
+    "fonts/**/*",
+    "vendors/**/*"
+  ],
+  "dependencies": {
+    "@zip.js/zip.js": "^2.6.26",
+    "app": "^0.1.0",
+    "context": "^3.0.4",
+    "global": "^4.4.0",
+    "lodash": "^4.17.21",
+    "polished": "^4.2.2",
+    "prettier": "^2.7.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.4.0",
+    "react-spring": "^9.5.4",
+    "reset-css": "^5.0.1",
+    "store": "^2.0.12",
+    "styled-components": "^5.3.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.19.1",
+    "@babel/preset-env": "^7.19.1",
+    "@babel/preset-react": "^7.18.6",
+    "@parcel/config-default": "^2.7.0",
+    "@parcel/transformer-raw": "^2.7.0",
+    "@parcel/transformer-sass": "^2.7.0",
+    "parcel": "^2.7.0",
+    "parcel-plugin-local-collection": "file:./plugins",
+    "sass": "^1.54.9"
+  }
+}

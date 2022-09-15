@@ -1,0 +1,1 @@
+{"mappings":"AAAAA,QAAQC,IAAI,YAAa,kDAEzBC,OAAOC,WAAa","sources":["src/static/vendors/index.js"],"sourcesContent":["console.log('[DEVTOOL]', 'Self-maintaining global modules initialized!!!');\n\nwindow.vendorList = [];\n"],"names":["console","log","window","vendorList"],"version":3,"file":"devtool.app.6fb73acd.js.map"}

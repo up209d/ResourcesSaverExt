@@ -6,7 +6,11 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
-- 0.1.9: Add download list
+- 2.0.0: Refactor > Check `unpacked2x`
+
+### Archived
+
+- 0.1.9: Add download list > Check `unpacked1x`
 
 - 0.1.8: fixed zip file uncompressing with missing path issue in Window
 
@@ -48,7 +52,14 @@ https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablah
 
 - 0.0.1: Download all webpages by re-dowloading them from resource-urls.
 
+v1
+
 ![alt text](https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot.png?raw=true)
+
+v2
+![alt text](https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-dark.png?raw=true)
+![alt text](https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-modal.png?raw=true)
+![alt text](https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-report.png?raw=true)
 
 Output results with same structure as online sources:
 

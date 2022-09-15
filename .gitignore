@@ -1,7 +1,19 @@
+# Modules
 node_modules
-.tmp
 bower_components
 test/bower_components
+
+# Misc
+.tmp
 .DS_Store
+*.log
+
+# Distribution
+dist
+
+# Parcel
+.cache
+.parcel-cache
+
+# IDE
 .idea
-unpacked-ff
