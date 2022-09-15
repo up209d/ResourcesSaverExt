@@ -5,9 +5,10 @@ export const ToggleWrapper = styled.div`
   position: relative;
   padding: 10px 10px 10px 20px;
   cursor: pointer;
+  font-size: 14px;
   transition: color 0.15s ease-out;
   user-select: none;
-  pointer-events: ${props => props.noInteraction ? 'none' : 'all'};
+  pointer-events: ${(props) => (props.noInteraction ? 'none' : 'all')};
   &::before {
     width: 10px;
     height: 10px;
@@ -29,9 +30,9 @@ export const ToggleWrapper = styled.div`
     position: absolute;
     top: calc(4px + 11px);
     left: 4px;
-    transition: all 0.3s ${props => props.theme.elasticBezier};
+    transition: all 0.3s ${(props) => props.theme.elasticBezier};
   }
-  ${props => {
+  ${(props) => {
     const activeColor = props.theme[props.activeColor]
       ? lighten(props.theme.factor > 0 ? 0 : 0.1, props.theme[props.activeColor])
       : props.theme.text;

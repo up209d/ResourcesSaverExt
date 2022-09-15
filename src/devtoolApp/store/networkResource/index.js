@@ -5,10 +5,11 @@ const KEY = `url`;
 
 export const STATE_KEY = `networkResource`;
 
-export const { add: addNetworkResource, remove: removeNetworkResource, reset: resetNetworkResource } = generateManageActions(
-  ACTION,
-  KEY
-);
+export const {
+  add: addNetworkResource,
+  remove: removeNetworkResource,
+  reset: resetNetworkResource,
+} = generateManageActions(ACTION, KEY);
 
 export const networkResourceReducer = generateManageReducer(ACTION, KEY);
 

@@ -8,13 +8,10 @@ import { StoreContext, useStore, useStoreConfigure } from 'devtoolApp/store';
 import DownloadList from './components/DownloadList';
 import * as uiActions from './store/ui';
 import * as downloadListActions from './store/downloadList';
-import * as downloadLogActions from './store/downloadLog';
 import { useAppTheme } from './hooks/useAppTheme';
 import { useAppInit } from './hooks/useAppInit';
 import { useAppRecordingStaticResource } from './hooks/useAppRecordingStaticResource';
 import { useAppRecordingNetworkResource } from './hooks/useAppRecordingNetworkResource';
-import { logResourceByUrl } from './utils/resource';
-import { resolveDuplicatedResources } from './utils/file';
 
 export const DevToolApp = ({ initialChromeTab }) => {
   useAppInit();
@@ -37,15 +34,6 @@ export const DevToolApp = ({ initialChromeTab }) => {
       );
     }
   }, [initialChromeTab, dispatch]);
-
-  // // Debug log
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     const { staticResource, networkResource } = window.debugState;
-  //     console.log(staticResource, networkResource);
-  //     logResourceByUrl(dispatch, initialChromeTab.url, resolveDuplicatedResources([...staticResource, ...networkResource]));
-  //   }, 1000);
-  // }, []);
 
   return (
     <Wrapper>

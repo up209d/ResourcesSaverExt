@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   AddButtonWrapper,
   DownloadListHeader,
@@ -6,6 +6,7 @@ import {
   DownloadListContainer,
   DownloadListWrapper,
   DownloadListItemUrl,
+  DownloadListButtonGroup,
 } from './styles';
 import { useStore } from 'devtoolApp/store';
 import Button from '../Button';
@@ -14,13 +15,16 @@ import ParserModal from './ParserModal';
 import * as downloadListActions from 'devtoolApp/store/downloadList';
 import * as uiActions from 'devtoolApp/store/ui';
 import LogSection from './LogSection';
+import OptionSection from './OptionSection';
+import { FaTrash } from 'react-icons/fa';
+import { MdDownloading } from 'react-icons/md';
 
 export const DownloadList = () => {
   const { state, dispatch } = useStore();
   const {
     downloadList,
     downloadLog,
-    ui: { tab, log, isSaving },
+    ui: { tab, log, isSaving, savingIndex },
   } = state;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleClose = useMemo(() => () => setIsModalOpen(false), []);
@@ -31,14 +35,16 @@ export const DownloadList = () => {
   );
   const handleRemove = (item) => () => dispatch(downloadListActions.removeDownloadItem(item));
   const handleLog = (currentLog) => () => {
-    console.log('SET LOG: ', currentLog);
+    console.log('[DEVTOOL] SET LOG: ', currentLog);
     if (log?.url === currentLog?.url) {
       return dispatch(uiActions.setLog());
     }
     dispatch(uiActions.setLog(currentLog));
   };
+
   return (
     <DownloadListWrapper>
+      <OptionSection />
       <DownloadListHeader>Download List:</DownloadListHeader>
       <DownloadListContainer>
         {downloadList.map((item, index) => {
@@ -47,17 +53,24 @@ export const DownloadList = () => {
           return (
             <React.Fragment key={item.url}>
               <DownloadListItemWrapper highlighted={item.url === tab.url} done={!!foundLog} logExpanded={logExpanded}>
-                <DownloadListItemUrl active={isSaving === item.url}>{item.url}</DownloadListItemUrl>
-                {foundLog && (
-                  <Button color={`secondary`} onClick={handleLog(foundLog)}>
-                    {logExpanded ? `Hide Log` : `Show Log`}
-                  </Button>
-                )}
-                {index !== 0 && (
-                  <Button color={`danger`} onClick={handleRemove(item)}>
-                    Remove
-                  </Button>
-                )}
+                <DownloadListItemUrl active={isSaving === item.url}>{String(item.url).slice(0, 128)}</DownloadListItemUrl>
+                <DownloadListButtonGroup>
+                  {!isSaving && foundLog && (
+                    <Button color={`secondary`} onClick={handleLog(foundLog)}>
+                      {logExpanded ? `Hide Log` : `Show Log`}
+                    </Button>
+                  )}
+                  {!isSaving && index !== 0 && (
+                    <Button color={`danger`} onClick={handleRemove(item)}>
+                      <FaTrash />
+                    </Button>
+                  )}
+                  {isSaving && savingIndex === index && (
+                    <Button color={`primary`}>
+                      <MdDownloading size={18} />
+                    </Button>
+                  )}
+                </DownloadListButtonGroup>
               </DownloadListItemWrapper>
               {logExpanded && <LogSection log={log} />}
             </React.Fragment>

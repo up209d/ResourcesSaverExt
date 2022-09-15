@@ -12,4 +12,4 @@ export const useAppTheme = () => {
   window.debugTheme = currentTheme;
 
   return currentTheme;
-}
+};

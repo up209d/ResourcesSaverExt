@@ -22,6 +22,6 @@ export const debounce = (func, wait, immediate) => {
 
 export const logIfDev = (...props) => {
   if (process.env.NODE_ENV === 'development') {
-    console.log(...props);
+    console.log('[DEVTOOL]', ...props);
   }
 };

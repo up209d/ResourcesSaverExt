@@ -15,7 +15,7 @@
     "type": "module"
   },
   "permissions": ["tabs", "downloads", "downloads.shelf", "scripting"],
-  "host_permissions": ["http://localhost:1234/*" ,"http://*/", "https://*/"],
+  "host_permissions": ["http://localhost:1234/*", "http://*/", "https://*/"],
   "optional_host_permissions": ["*://*/*"],
   "devtools_page": "devtool.html",
   "manifest_version": 3

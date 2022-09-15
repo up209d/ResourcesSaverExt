@@ -1,3 +1,7 @@
+import prettier from 'prettier';
+import htmlParser from 'prettier/parser-html';
+import babelParser from 'prettier/parser-babel';
+import postCssParser from 'prettier/parser-postcss';
 import * as zip from '@zip.js/zip.js';
 
 export const resolveURLToPath = (cUrl, cType, cContent) => {
@@ -6,7 +10,7 @@ export const resolveURLToPath = (cUrl, cType, cContent) => {
   // Check the url whether it is a link or a string of text data
   if (foundIndex === -1 || foundIndex >= 10) {
     isDataURI = true;
-    console.log('Data URI Detected!!!!!');
+    console.log('[DEVTOOL]', 'Data URI Detected!!!!!');
     // Data URI
     if (cUrl.indexOf('data:') === 0) {
       let dataURIInfo = cUrl
@@ -14,7 +18,6 @@ export const resolveURLToPath = (cUrl, cType, cContent) => {
         .split(',')[0]
         .substring(0, 30)
         .replace(/[^A-Za-z0-9]/g, '.');
-      // console.log('=====> ',dataURIInfo);
       filename = dataURIInfo + '.' + Math.random().toString(16).substring(2) + '.txt';
     } else {
       filename = 'data.' + Math.random().toString(16).substring(2) + '.txt';
@@ -93,7 +96,14 @@ export const resolveURLToPath = (cUrl, cType, cContent) => {
       filepath = filepath + '.html';
       haveExtension = 'html';
     }
-    console.log('File without extension: ', filename, 'Will process as: ', filename + '.' + haveExtension, filepath);
+    console.log(
+      '[DEVTOOL]',
+      'File without extension: ',
+      filename,
+      'Will process as: ',
+      filename + '.' + haveExtension,
+      filepath
+    );
     filename = filename + '.' + haveExtension;
   }
 
@@ -112,7 +122,7 @@ export const resolveURLToPath = (cUrl, cType, cContent) => {
       filepath = decodeURIComponent(filepath);
       filename = decodeURIComponent(filename);
     } catch (err) {
-      console.log(err);
+      console.log('[DEVTOOL]', err);
     }
   }
 
@@ -179,19 +189,54 @@ export const resolveDuplicatedResources = (resourceList = []) => {
   return result;
 };
 
-export const downloadZipFile = (toDownload, eachDoneCallback, callback) => {
+export const downloadZipFile = (toDownload, options, eachDoneCallback, callback) => {
   const blobWrite = new zip.BlobWriter('application/zip');
   const zipWriter = new zip.ZipWriter(blobWrite);
-  addItemsToZipWriter(zipWriter, toDownload, eachDoneCallback, downloadCompleteZip.bind(this, zipWriter, blobWrite, callback));
+  addItemsToZipWriter(
+    zipWriter,
+    toDownload,
+    options,
+    eachDoneCallback,
+    downloadCompleteZip.bind(this, zipWriter, blobWrite, callback)
+  );
 };
 
-export const addItemsToZipWriter = (zipWriter, items, eachDoneCallback, callback) => {
+export const addItemsToZipWriter = (zipWriter, items, options, eachDoneCallback, callback) => {
   const item = items[0];
   const rest = items.slice(1);
 
   // if item exist so add it to zip
   if (item) {
     // Beautify here
+    if (options?.beautifyFile && !item.encoding && !!item.content) {
+      try {
+        const fileExt = item.saveAs?.name?.match(/\.([0-9a-z]+)(?:[\?#]|$)/);
+        switch (fileExt ? fileExt[1] : '') {
+          case 'js': {
+            console.log('[DEVTOOL]', item.saveAs?.name, ' will be beautified!');
+            item.content = prettier.format(item.content, { parser: 'babel', plugins: [babelParser] });
+            break;
+          }
+          case 'json': {
+            console.log('[DEVTOOL]', item.saveAs?.name, ' will be beautified!');
+            item.content = prettier.format(item.content, { parser: 'json', plugins: [babelParser] });
+            break;
+          }
+          case 'html': {
+            console.log('[DEVTOOL]', item.saveAs?.name, ' will be beautified!');
+            item.content = prettier.format(item.content, { parser: 'html', plugins: [htmlParser, babelParser, postCssParser] });
+            break;
+          }
+          case 'css': {
+            console.log('[DEVTOOL]', item.saveAs?.name, ' will be beautified!');
+            item.content = prettier.format(item.content, { parser: 'css', plugins: [postCssParser] });
+            break;
+          }
+        }
+      } catch (err) {
+        console.log('[DEVTOOL]', 'Cannot format file', item, err);
+      }
+    }
 
     // Check whether base64 encoding is valid
     if (item.encoding === 'base64') {
@@ -199,11 +244,11 @@ export const addItemsToZipWriter = (zipWriter, items, eachDoneCallback, callback
       try {
         atob(item.content);
       } catch (err) {
-        console.log(item.url, ' is not base64 encoding, try to encode to base64.');
+        console.log('[DEVTOOL]', item.url, ' is not base64 encoding, try to encode to base64.');
         try {
           item.content = btoa(item.content);
         } catch (err) {
-          console.log(item.url, ' failed to encode to base64, fallback to text.');
+          console.log('[DEVTOOL]', item.url, ' failed to encode to base64, fallback to text.');
           item.encoding = null;
         }
       }
@@ -216,20 +261,28 @@ export const addItemsToZipWriter = (zipWriter, items, eachDoneCallback, callback
         : new zip.TextReader(item.content || 'No Content: ' + item.url);
 
     // Item has no content
-    // const isNoContent = !item.content;
-
-    // Make sure the file has some byte otherwise no import to avoid corrupted zip
-    if (resolvedContent.size > 0 || resolvedContent['blobReader']?.size > 0) {
-      zipWriter.add(item.saveAs.path, resolvedContent).finally(() => {
-        eachDoneCallback(item, true);
-        addItemsToZipWriter(zipWriter, rest, eachDoneCallback, callback);
-      });
-    } else {
-      // If no size, exclude the item
-      console.log('EXCLUDED: ', item.url);
-      eachDoneCallback(item, false);
+    const isNoContent = !item.content;
+    const ignoreNoContentFile = !!options?.ignoreNoContentFile;
+    if (isNoContent && ignoreNoContentFile) {
+      // Exclude file as no content
+      console.log('[DEVTOOL]', 'EXCLUDED: ', item.url);
+      eachDoneCallback(item, true);
       // To the next item
-      addItemsToZipWriter(zipWriter, rest, eachDoneCallback, callback);
+      addItemsToZipWriter(zipWriter, rest, options, eachDoneCallback, callback);
+    } else {
+      // Make sure the file has some byte otherwise no import to avoid corrupted zip
+      if (resolvedContent.size > 0 || resolvedContent['blobReader']?.size > 0) {
+        zipWriter.add(item.saveAs.path, resolvedContent).finally(() => {
+          eachDoneCallback(item, true);
+          addItemsToZipWriter(zipWriter, rest, options, eachDoneCallback, callback);
+        });
+      } else {
+        // If no size, exclude the item
+        console.log('[DEVTOOL]', 'EXCLUDED: ', item.url);
+        eachDoneCallback(item, false);
+        // To the next item
+        addItemsToZipWriter(zipWriter, rest, options, eachDoneCallback, callback);
+      }
     }
   } else {
     // Callback when all done

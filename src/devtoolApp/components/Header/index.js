@@ -1,39 +1,94 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { withTheme } from 'styled-components';
 import { HeaderWrapper } from './styles';
 import ResetButton from 'devtoolApp/components/ResetButton';
 import Button from 'devtoolApp/components/Button';
 import { useStore } from 'devtoolApp/store';
 import { downloadZipFile, resolveDuplicatedResources } from 'devtoolApp/utils/file';
-import { INITIAL_STATE as UI_INITIAL_STATE } from 'devtoolApp/store/ui';
 import { logResourceByUrl } from '../../utils/resource';
 import * as uiActions from 'devtoolApp/store/ui';
+import { INITIAL_STATE as UI_INITIAL_STATE } from 'devtoolApp/store/ui';
+import { resetNetworkResource } from 'devtoolApp/store/networkResource';
+import { resetStaticResource } from 'devtoolApp/store/staticResource';
 
 export const Header = (props) => {
   const { state, dispatch } = useStore();
+  const { networkResource, staticResource } = state;
+  const networkResourceRef = useRef(networkResource);
+  const staticResourceRef = useRef(staticResource);
   const {
+    downloadList,
+    option: { ignoreNoContentFile, beautifyFile },
     ui: { tab, status, isSaving },
   } = state;
-  const handleOnSave = useMemo(
-    () => () => {
-      const { networkResource, staticResource } = state;
-      const toDownload = resolveDuplicatedResources([...(staticResource || []), ...(networkResource || [])]);
-      if (toDownload.length) {
-        dispatch(uiActions.setIsSaving(true));
-        downloadZipFile(
-          toDownload,
-          (item, isDone) => {
-            dispatch(uiActions.setStatus(`Compressed: ${item.url} Processed: ${isDone}`));
-          },
-          () => {
-            logResourceByUrl(dispatch, tab.url, toDownload);
-            dispatch(uiActions.setIsSaving(false));
-          }
-        );
-      }
-    },
-    [state, dispatch, tab]
-  );
+
+  const handleOnSave = useCallback(async () => {
+    dispatch(uiActions.setIsSaving(true));
+    for (let i = 0; i < downloadList.length; i++) {
+      const downloadItem = downloadList[i];
+      dispatch(uiActions.setSavingIndex(i));
+      await new Promise(async (resolve) => {
+        let loaded = true;
+        if (i > 0) {
+          loaded = await new Promise((r) => {
+            const tabChangeHandler = (tabId, changeInfo) => {
+              if (tabId !== chrome.devtools.inspectedWindow.tabId || !changeInfo || !changeInfo.status) {
+                return;
+              }
+              if (changeInfo.status === 'loading') {
+                return;
+              }
+              if (changeInfo.status === 'complete') {
+                setTimeout(() => {
+                  r(true);
+                }, 2000);
+              } else {
+                r(false);
+              }
+              chrome.tabs.onUpdated.removeListener(tabChangeHandler);
+            };
+            chrome.tabs.onUpdated.addListener(tabChangeHandler);
+            setTimeout(function () {
+              dispatch(uiActions.setTab({ url: downloadItem.url }));
+              chrome.tabs.update(chrome.devtools.inspectedWindow.tabId, { url: downloadItem.url });
+            }, 500);
+          });
+        }
+        const toDownload = resolveDuplicatedResources([
+          ...(networkResourceRef.current || []),
+          ...(staticResourceRef.current || []),
+        ]);
+        if (loaded && toDownload.length) {
+          downloadZipFile(
+            toDownload,
+            { ignoreNoContentFile, beautifyFile },
+            (item, isDone) => {
+              dispatch(uiActions.setStatus(`Compressed: ${item.url} Processed: ${isDone}`));
+            },
+            () => {
+              logResourceByUrl(dispatch, downloadItem.url, toDownload);
+              if (i + 1 !== downloadList.length) {
+                dispatch(resetNetworkResource());
+                dispatch(resetStaticResource());
+              }
+              resolve();
+            }
+          );
+        }
+      });
+    }
+    dispatch(uiActions.setStatus(UI_INITIAL_STATE.status));
+    dispatch(uiActions.setIsSaving(false));
+  }, [state, dispatch, tab]);
+
+  useEffect(() => {
+    networkResourceRef.current = networkResource;
+  }, [networkResource]);
+
+  useEffect(() => {
+    staticResourceRef.current = staticResource;
+  }, [staticResource]);
+
   return (
     <HeaderWrapper>
       <div>
@@ -41,7 +96,7 @@ export const Header = (props) => {
         <sup>Version: 2.0.0</sup>
         <ResetButton color={props.theme.white} bgColor={props.theme.danger} />
       </div>
-      <Button onClick={handleOnSave} disabled={isSaving}>
+      <Button onClick={handleOnSave} disabled={status !== UI_INITIAL_STATE.status || isSaving}>
         {isSaving ? `Saving all resource...` : `Save All Resources`}
       </Button>
     </HeaderWrapper>

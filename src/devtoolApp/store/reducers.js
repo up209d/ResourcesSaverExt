@@ -1,10 +1,11 @@
 import uiReducerConfig from './ui';
+import optionReducerConfig from './option';
 import staticResourceReducerConfig from './staticResource';
 import networkResourceReducerConfig from './networkResource';
 import downloadListReducerConfig from './downloadList';
 import downloadLogReducerConfig from './downloadLog';
 
-const combineReducers = reducers => {
+const combineReducers = (reducers) => {
   return (state = {}, action) => {
     const newState = {};
     for (let key in reducers) {
@@ -18,6 +19,7 @@ const combineReducers = reducers => {
 
 export const appReducers = combineReducers({
   ...uiReducerConfig,
+  ...optionReducerConfig,
   ...staticResourceReducerConfig,
   ...networkResourceReducerConfig,
   ...downloadListReducerConfig,

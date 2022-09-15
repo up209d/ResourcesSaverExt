@@ -25,4 +25,4 @@ export const useAppRecordingStaticResource = () => {
       dispatch(staticResourceActions.resetStaticResource());
     };
   }, [dispatch]);
-}
+};

@@ -5,7 +5,12 @@ const KEY = `url`;
 
 export const STATE_KEY = `downloadLog`;
 
-export const { add: addLogItem, remove: removeLogItem, replace: replaceLogItem, reset: resetLogList } = generateManageActions(ACTION, KEY);
+export const {
+  add: addLogItem,
+  remove: removeLogItem,
+  replace: replaceLogItem,
+  reset: resetLogList,
+} = generateManageActions(ACTION, KEY);
 
 export const downloadLogReducer = generateManageReducer(ACTION, KEY);
 

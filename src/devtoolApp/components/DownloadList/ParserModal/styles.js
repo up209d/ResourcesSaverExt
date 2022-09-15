@@ -8,7 +8,7 @@ export const ParserModalWrapper = styled.div`
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease-in-out;
-  ${props =>
+  ${(props) =>
     props.isOpen
       ? css`
           opacity: 1;
@@ -24,7 +24,7 @@ export const ParserModalBackdrop = styled.div`
   z-index: ${Z_INDEX + 1};
   width: 100%;
   height: 100%;
-  background-color: ${props => rgba(props.theme.black, 0.75)};
+  background-color: ${(props) => rgba(props.theme.black, 0.75)};
 `;
 
 export const ParserTextContainer = styled.div`
@@ -36,11 +36,11 @@ export const ParserTextContainer = styled.div`
   z-index: ${Z_INDEX + 2};
   box-sizing: border-box;
   padding: 20px;
-  border-radius: ${props => props.theme.borderRadius * 2}px;
-  background-color: ${props => props.theme.white};
+  border-radius: ${(props) => props.theme.borderRadius * 2}px;
+  background-color: ${(props) => props.theme.white};
   transform: translateY(-50px);
-  transition: transform 0.5s ${props => props.theme.elasticBezier};
-  ${props =>
+  transition: transform 0.5s ${(props) => props.theme.elasticBezier};
+  ${(props) =>
     props.isOpen
       ? css`
           transform: translateY(0);
@@ -53,8 +53,8 @@ export const ParserTextArea = styled.textarea`
   height: 310px;
   padding: 20px;
   border: none;
-  border-radius: ${props => props.theme.borderRadius}px;
-  background-color: ${props => rgba(props.theme.black, 0.05)};
+  border-radius: ${(props) => props.theme.borderRadius}px;
+  background-color: ${(props) => rgba(props.theme.black, 0.05)};
   outline: none;
   resize: none;
 `;

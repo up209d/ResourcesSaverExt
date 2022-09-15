@@ -20,4 +20,4 @@ export const useAppRecordingNetworkResource = () => {
       dispatch(networkResourceActions.resetNetworkResource());
     };
   }, [dispatch]);
-}
+};

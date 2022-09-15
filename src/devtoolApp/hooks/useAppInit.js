@@ -6,4 +6,4 @@ export const useAppInit = () => {
       document.getElementById('preload').setAttribute('data-hidden', '');
     }, 150);
   }, []);
-}
+};

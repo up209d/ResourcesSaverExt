@@ -23,7 +23,7 @@ export const generateThemeConfig = (factor, baseShade) => {
     borderRadius: 5,
     background: baseShade,
     text: getShade(0.9, baseShade, factor),
-    getShade: value => getShade(value, baseShade, factor),
+    getShade: (value) => getShade(value, baseShade, factor),
   };
 };
 
@@ -53,7 +53,7 @@ export const BASE_SHADE = {
 export const FACTOR = {
   [THEME_KEYS.LIGHT]: 1,
   [THEME_KEYS.DARK]: -0.8,
-}
+};
 
 export const THEMES = {
   [THEME_KEYS.LIGHT]: {
@@ -78,6 +78,6 @@ export const THEMES = {
   },
 };
 
-console.log(THEMES);
+console.log('[DEVTOOL]', THEMES);
 
-export const getTheme = key => THEMES[key] || THEMES[THEME_KEYS.LIGHT];
+export const getTheme = (key) => THEMES[key] || THEMES[THEME_KEYS.LIGHT];

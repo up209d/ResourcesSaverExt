@@ -11,11 +11,11 @@ export const DownloadListHeader = styled.h2`
   flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
-  color: ${props => props.theme.text};
+  color: ${(props) => props.theme.text};
 `;
 
 export const DownloadListContainer = styled.div`
-  color: ${props => props.theme.text};
+  color: ${(props) => props.theme.text};
   margin: 0 20px;
   padding: 10px 0;
 `;
@@ -25,14 +25,15 @@ export const DownloadListItemWrapper = styled.div`
   flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 5px;
   padding: 10px 20px;
-  border-radius: ${props => props.theme.borderRadius}px;
-  background-color: ${props => props.theme.grayScale.gray1};
+  border-radius: ${(props) => props.theme.borderRadius}px;
+  background-color: ${(props) => props.theme.grayScale.gray1};
   &:not(:last-child) {
-    border-bottom: 1px dotted ${props => (props.logExpanded ? `transparent` : props.theme.grayScale.gray5)};
+    border-bottom: 1px dotted ${(props) => (props.logExpanded ? `transparent` : props.theme.grayScale.gray5)};
   }
 
-  ${props =>
+  ${(props) =>
     props.highlighted
       ? css`
           background-color: ${rgba(props.theme.primary, 0.2)};
@@ -41,7 +42,7 @@ export const DownloadListItemWrapper = styled.div`
         `
       : ``};
 
-  ${props =>
+  ${(props) =>
     props.done
       ? css`
           background-color: ${rgba(props.theme.secondary, 0.2)};
@@ -53,7 +54,14 @@ export const DownloadListItemWrapper = styled.div`
   ${ButtonWrapper} {
     padding: 10px 20px;
     font-size: 12px;
+    margin-left: 5px;
   }
+`;
+
+export const DownloadListButtonGroup = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
 `;
 
 export const DownloadListItemUrl = styled.div`
@@ -62,7 +70,7 @@ export const DownloadListItemUrl = styled.div`
   line-height: 20px;
   font-size: 14px;
   position: relative;
-  ${props =>
+  ${(props) =>
     props.active
       ? css`
           padding-left: 10px;
@@ -89,7 +97,7 @@ export const AddButtonWrapper = styled.div`
   justify-content: flex-start;
   margin: 0 20px;
   ${ButtonWrapper} {
-  font-size: 12px;
+    font-size: 12px;
     margin-right: 10px;
     padding: 10px 20px;
   }
