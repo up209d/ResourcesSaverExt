@@ -10,5 +10,5 @@ window.onload = () => {
 
 chrome.tabs.get(chrome.devtools.inspectedWindow.tabId, function (initialTab) {
   const root = createRoot(document.getElementById('root'));
-  root.render(<App initialTab={initialTab} theme={window.theme} />);
+  root.render(<App initialChromeTab={initialTab} />);
 });

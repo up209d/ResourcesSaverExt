@@ -21,21 +21,23 @@ export const TABS_COLORS = {
   FAIL: 'danger',
 };
 
-export const LogSection = props => {
+export const LogSection = (props) => {
   const { log } = props;
   const [filter, setFilter] = useState(``);
   const [viewTab, setViewTab] = useState(LOG_TABS.SUCCESS);
   const result = useMemo(() => {
     const { logs = [] } = log;
     return {
-      [LOG_TABS.SUCCESS]: logs.filter(i => !i.failed && i.hasContent && (!filter || (filter && i.url.includes(filter.toLowerCase())))),
-      [LOG_TABS.FAIL]: logs.filter(i => i.failed && (!filter || (filter && i.url.includes(filter.toLowerCase())))),
-      [LOG_TABS.NO_CONTENT]: logs.filter(i => !i.hasContent && (!filter || (filter && i.url.includes(filter.toLowerCase())))),
+      [LOG_TABS.SUCCESS]: logs.filter(
+        (i) => !i.failed && i.hasContent && (!filter || (filter && i.url.includes(filter.toLowerCase())))
+      ),
+      [LOG_TABS.FAIL]: logs.filter((i) => i.failed && (!filter || (filter && i.url.includes(filter.toLowerCase())))),
+      [LOG_TABS.NO_CONTENT]: logs.filter((i) => !i.hasContent && (!filter || (filter && i.url.includes(filter.toLowerCase())))),
     };
   }, [log, filter]);
-  const handleFilterChange = useMemo(() => e => setFilter(e.target.value), []);
+  const handleFilterChange = useMemo(() => (e) => setFilter(e.target.value), []);
 
-  const handleToggle = currentViewTab => () => setViewTab(currentViewTab);
+  const handleToggle = (currentViewTab) => () => setViewTab(currentViewTab);
   return (
     <LogSectionWrapper>
       <LogSectionTitle>Download log</LogSectionTitle>
@@ -65,10 +67,12 @@ export const LogSection = props => {
             No Content ({result.NO_CONTENT.length})
           </Toggle>
         </LogSectionFilterToggle>
+      </LogSectionFilter>
+      <LogSectionFilter>
         <LogSectionFilterInput value={filter} onChange={handleFilterChange} placeholder={`Enter filter keywords...`} />
       </LogSectionFilter>
       <LogSectionList>
-        {result[viewTab].map(i => (
+        {result[viewTab].map((i) => (
           <LogSectionListItem key={i.url} bgColor={TABS_COLORS[viewTab]}>
             {i.url}
           </LogSectionListItem>

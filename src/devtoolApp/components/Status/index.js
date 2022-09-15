@@ -1,11 +1,15 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { withTheme } from 'styled-components';
 import { StatusWrapper, CountWrapper, StatusMessage } from './styles';
-import { StoreContext } from 'devtoolApp/store';
+import { useStore } from 'devtoolApp/store';
 
 export const Status = () => {
-  const { state } = useContext(StoreContext);
-  const { staticResource, networkResource, ui: { status } } = state;
+  const { state } = useStore();
+  const {
+    staticResource,
+    networkResource,
+    ui: { status },
+  } = state;
   return (
     <StatusWrapper>
       <CountWrapper>

@@ -2,6 +2,6 @@ const devToolTheme = chrome && chrome.devtools && chrome.devtools.panels && chro
 const preload = document.getElementById("preload");
 window.theme = devToolTheme && devToolTheme.toLowerCase().includes("dark") ? "dark" : "light";
 if (preload) preload.setAttribute(`data-${window.theme}`, ``);
-console.log("[DEVTOOL]: Light/Dark Theme Detection initialized!");
+console.log(`[DEVTOOL]: Theme Detection: "${window.theme}"`);
 
-//# sourceMappingURL=devtool.app.2ee9156a.js.map
+//# sourceMappingURL=devtool.app.c46477f1.js.map

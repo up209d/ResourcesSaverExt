@@ -4,111 +4,68 @@ import { ThemeProvider } from 'styled-components';
 import { Wrapper } from 'devtoolApp/styles';
 import Header from 'devtoolApp/components/Header';
 import Status from 'devtoolApp/components/Status';
-import { useStore, StoreContext } from 'devtoolApp/store';
-import * as staticResourceActions from 'devtoolApp/store/staticResource';
-import * as networkResourceActions from 'devtoolApp/store/networkResource';
-import { processNetworkResourceToStore, processStaticResourceToStore } from 'devtoolApp/utils/resource';
+import { StoreContext, useStore, useStoreConfigure } from 'devtoolApp/store';
 import DownloadList from './components/DownloadList';
 import * as uiActions from './store/ui';
 import * as downloadListActions from './store/downloadList';
 import * as downloadLogActions from './store/downloadLog';
+import { useAppTheme } from './hooks/useAppTheme';
+import { useAppInit } from './hooks/useAppInit';
+import { useAppRecordingStaticResource } from './hooks/useAppRecordingStaticResource';
+import { useAppRecordingNetworkResource } from './hooks/useAppRecordingNetworkResource';
+import { logResourceByUrl } from './utils/resource';
+import { resolveDuplicatedResources } from './utils/file';
 
-export const App = (props) => {
-  const { theme, initialTab } = props;
-  const [state, dispatch, store] = useStore();
-  const currentTheme = useMemo(() => getTheme(theme), [theme]);
+export const DevToolApp = ({ initialChromeTab }) => {
+  useAppInit();
+  useAppRecordingStaticResource();
+  useAppRecordingNetworkResource();
 
-  useEffect(() => {
-    document.body.style.backgroundColor = currentTheme.background;
-  }, [theme]);
-
-  useEffect(() => {
-    //Get all HARs that were already captured
-    chrome.devtools.network.getHAR((logInfo) => {
-      if (logInfo && logInfo.entries && logInfo.entries.length) {
-        logInfo.entries.forEach((req) => processNetworkResourceToStore(dispatch, req));
-      }
-    });
-
-    //This can be used for detecting when a request is finished
-    chrome.devtools.network.onRequestFinished.addListener((req) => processNetworkResourceToStore(dispatch, req));
-
-    //Get all resources that were already cached
-    chrome.devtools.inspectedWindow.getResources((resources) => {
-      if (resources && resources.length) {
-        resources.forEach((res) => processStaticResourceToStore(dispatch, res));
-      }
-    });
-
-    //This can be used for identifying when ever a new resource is added
-    chrome.devtools.inspectedWindow.onResourceAdded.addListener((res) => processStaticResourceToStore(dispatch, res));
-
-    //This can be used to detect when ever a resource code is changed/updated
-    chrome.devtools.inspectedWindow.onResourceContentCommitted.addListener((res) =>
-      processStaticResourceToStore(dispatch, res)
-    );
-
-    return () => {
-      dispatch(staticResourceActions.resetStaticResource());
-      dispatch(networkResourceActions.resetNetworkResource());
-    };
-  }, [dispatch]);
+  const { dispatch } = useStore();
 
   useEffect(() => {
-    if (initialTab) {
-      dispatch(uiActions.setTab(initialTab));
+    if (initialChromeTab) {
+      dispatch(uiActions.setTab(initialChromeTab));
       dispatch(
         downloadListActions.replaceDownloadItem(
           {
-            url: initialTab.url,
+            url: initialChromeTab.url,
           },
           0,
           true
         )
       );
     }
-  }, [initialTab, dispatch]);
+  }, [initialChromeTab, dispatch]);
 
-  // Debug log
-  useEffect(() => {
-    setTimeout(() => {
-      const { staticResource, networkResource } = window.debugState;
-      console.log(staticResource, networkResource);
-      dispatch(
-        downloadLogActions.addLogItem({
-          url: initialTab.url,
-          logs: [...staticResource, ...networkResource].map((i) => ({
-            failed: i.failed,
-            hasContent: !!i.content,
-            url: i.url,
-            saveAs: i.saveAs,
-          })),
-        })
-      );
-    }, 1000);
-  }, []);
-
-  const handleSave = useMemo(() => (res) => console.log(res), []);
-
-  window.debugState = state;
-  window.debugTheme = currentTheme;
-
-  useEffect(() => {
-    setTimeout(() => {
-      document.getElementById('preload').setAttribute('data-hidden', '');
-    }, 150);
-  }, []);
+  // // Debug log
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     const { staticResource, networkResource } = window.debugState;
+  //     console.log(staticResource, networkResource);
+  //     logResourceByUrl(dispatch, initialChromeTab.url, resolveDuplicatedResources([...staticResource, ...networkResource]));
+  //   }, 1000);
+  // }, []);
 
   return (
-    <StoreContext.Provider value={store}>
-      <ThemeProvider theme={currentTheme}>
-        <Wrapper>
-          <Header onSave={handleSave} />
-          <Status />
-          <DownloadList />
-        </Wrapper>
+    <Wrapper>
+      <Header />
+      <Status />
+      <DownloadList />
+    </Wrapper>
+  );
+};
+
+export const App = (props) => {
+  const { initialChromeTab } = props;
+  const [state, dispatch] = useStoreConfigure();
+  return (
+    <StoreContext.Provider value={useMemo(() => ({ state, dispatch }), [state, dispatch])}>
+      <ThemeProvider theme={useAppTheme()}>
+        <DevToolApp initialChromeTab={initialChromeTab} />
       </ThemeProvider>
     </StoreContext.Provider>
   );
 };
+
 export default App;

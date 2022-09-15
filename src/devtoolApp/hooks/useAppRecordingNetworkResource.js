@@ -4,7 +4,7 @@ import * as networkResourceActions from '../store/networkResource';
 import useStore from '../store';
 
 export const useAppRecordingNetworkResource = () => {
-  const [dispatch] = useStore();
+  const { dispatch } = useStore();
   useEffect(() => {
     //Get all HARs that were already captured
     chrome.devtools.network.getHAR((logInfo) => {

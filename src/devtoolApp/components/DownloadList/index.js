@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   AddButtonWrapper,
   DownloadListHeader,
@@ -7,7 +7,7 @@ import {
   DownloadListWrapper,
   DownloadListItemUrl,
 } from './styles';
-import { StoreContext } from 'devtoolApp/store';
+import { useStore } from 'devtoolApp/store';
 import Button from '../Button';
 import { withTheme } from 'styled-components';
 import ParserModal from './ParserModal';
@@ -16,7 +16,7 @@ import * as uiActions from 'devtoolApp/store/ui';
 import LogSection from './LogSection';
 
 export const DownloadList = () => {
-  const { state, dispatch } = useContext(StoreContext);
+  const { state, dispatch } = useStore();
   const {
     downloadList,
     downloadLog,
@@ -26,23 +26,23 @@ export const DownloadList = () => {
   const handleClose = useMemo(() => () => setIsModalOpen(false), []);
   const handleOpen = useMemo(() => () => setIsModalOpen(true), []);
   const handleReset = useMemo(
-    () => () => downloadList.slice(1).forEach(item => dispatch(downloadListActions.removeDownloadItem(item))),
+    () => () => downloadList.slice(1).forEach((item) => dispatch(downloadListActions.removeDownloadItem(item))),
     [downloadList, dispatch]
   );
-  const handleRemove = item => () => dispatch(downloadListActions.removeDownloadItem(item));
-  const handleLog = currentLog => () => {
-    if (!log) {
-      dispatch(uiActions.setLog(currentLog));
-    } else if (currentLog.url === log.url) {
-      dispatch(uiActions.setLog());
+  const handleRemove = (item) => () => dispatch(downloadListActions.removeDownloadItem(item));
+  const handleLog = (currentLog) => () => {
+    console.log('SET LOG: ', currentLog);
+    if (log?.url === currentLog?.url) {
+      return dispatch(uiActions.setLog());
     }
+    dispatch(uiActions.setLog(currentLog));
   };
   return (
     <DownloadListWrapper>
       <DownloadListHeader>Download List:</DownloadListHeader>
       <DownloadListContainer>
         {downloadList.map((item, index) => {
-          const foundLog = downloadLog.find(i => i.url === item.url);
+          const foundLog = downloadLog.find((i) => i.url === item.url);
           const logExpanded = log && log.url === item.url;
           return (
             <React.Fragment key={item.url}>

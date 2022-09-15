@@ -1,20 +1,20 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ParserModalWrapper, ParserModalBackdrop, ParserTextContainer, ParserTextButtonGroup, ParserTextArea } from './styles';
-import { StoreContext } from 'devtoolApp/store';
-import Button from '../../Button';
+import Button from 'devtoolApp/components/Button';
 import * as downloadListActions from 'devtoolApp/store/downloadList';
+import useStore from 'devtoolApp/store';
 
-export const ParserModal = props => {
+export const ParserModal = (props) => {
   const { isOpen, onClose } = props;
-  const { state, dispatch } = useContext(StoreContext);
+  const { state, dispatch } = useStore();
   const { downloadList } = state;
   const [textArea, setTextArea] = useState(
     downloadList
       .slice(1)
-      .map(i => i.url)
+      .map((i) => i.url)
       .join('\n')
   );
-  const handleTextArea = useMemo(() => e => setTextArea(e.target.value), []);
+  const handleTextArea = useMemo(() => (e) => setTextArea(e.target.value), []);
   const handleUrls = useMemo(
     () => () => {
       if (textArea) {
@@ -22,10 +22,10 @@ export const ParserModal = props => {
           .split('\n')
           // Positive lookahead will match but not including the case
           .reduce((acc, i) => [...acc, ...i.split(/(?=https?:\/\/)/)], [])
-          .filter(url => {
+          .filter((url) => {
             return url.startsWith('http');
           })
-          .forEach(url => {
+          .forEach((url) => {
             dispatch(downloadListActions.addDownloadItem({ url }));
           });
       }

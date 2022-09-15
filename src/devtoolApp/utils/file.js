@@ -1,3 +1,5 @@
+import * as zip from '@zip.js/zip.js';
+
 export const resolveURLToPath = (cUrl, cType, cContent) => {
   let filepath, filename, isDataURI;
   let foundIndex = cUrl.search(/:\/\//);
@@ -13,20 +15,9 @@ export const resolveURLToPath = (cUrl, cType, cContent) => {
         .substring(0, 30)
         .replace(/[^A-Za-z0-9]/g, '.');
       // console.log('=====> ',dataURIInfo);
-      filename =
-        dataURIInfo +
-        '.' +
-        Math.random()
-          .toString(16)
-          .substring(2) +
-        '.txt';
+      filename = dataURIInfo + '.' + Math.random().toString(16).substring(2) + '.txt';
     } else {
-      filename =
-        'data.' +
-        Math.random()
-          .toString(16)
-          .substring(2) +
-        '.txt';
+      filename = 'data.' + Math.random().toString(16).substring(2) + '.txt';
     }
     filepath = '_DataURI/' + filename;
   } else {
@@ -148,37 +139,116 @@ export const resolveURLToPath = (cUrl, cType, cContent) => {
 export const resolveDuplicatedResources = (resourceList = []) => {
   const resolvedListByKey = {};
   const result = [];
-  resourceList
-    .filter(r => r && r.saveAs && r.saveAs.path && r.saveAs.name)
+  const resourceListUniqByUrl = Object.values(
+    resourceList.reduce(
+      (list, res) => ({
+        ...list,
+        ...(!list[res.url] || !list[res.url].content || res.content
+          ? {
+              [res.url]: res,
+            }
+          : {}),
+      }),
+      {}
+    )
+  );
+  resourceListUniqByUrl
+    .filter((r) => r && r.saveAs && r.saveAs.path && r.saveAs.name)
     .sort((rA, rB) => rA.saveAs.path.localeCompare(rB.saveAs.path))
-    .forEach(r => resolvedListByKey[r.saveAs.path] = (resolvedListByKey[r.saveAs.path] || []).concat([r]));
-  Object.values(resolvedListByKey).forEach(rGroup => {
-    result.push(...rGroup.length < 2 ?
-      rGroup :
-      rGroup
-        .map((r, rIndex) => rIndex === 0 ? r : {
-          ...r,
-          saveAs: {
-            ...r.saveAs,
-            name: r.saveAs.name.replace(/(\.)(?!.*\.)/g, ` (${rIndex}).`),
-            path: r.saveAs.path.replace(/(\.)(?!.*\.)/g, ` (${rIndex}).`),
-          },
-        }));
+    .forEach((r) => {
+      resolvedListByKey[r.saveAs.path] = (resolvedListByKey[r.saveAs.path] || []).concat([r]);
+    });
+  Object.values(resolvedListByKey).forEach((rGroup) => {
+    result.push(
+      ...(rGroup.length < 2
+        ? rGroup
+        : rGroup.map((r, rIndex) =>
+            rIndex === 0
+              ? r
+              : {
+                  ...r,
+                  saveAs: {
+                    ...r.saveAs,
+                    name: r.saveAs.name.replace(/(\.)(?!.*\.)/g, ` (${rIndex}).`),
+                    path: r.saveAs.path.replace(/(\.)(?!.*\.)/g, ` (${rIndex}).`),
+                  },
+                }
+          ))
+    );
   });
   return result;
 };
 
+export const downloadZipFile = (toDownload, eachDoneCallback, callback) => {
+  const blobWrite = new zip.BlobWriter('application/zip');
+  const zipWriter = new zip.ZipWriter(blobWrite);
+  addItemsToZipWriter(zipWriter, toDownload, eachDoneCallback, downloadCompleteZip.bind(this, zipWriter, blobWrite, callback));
+};
 
-export const downloadCompleteZip = (blobWriter, callback) => {
-  blobWriter.close(function(blob) {
-    chrome.tabs.get(chrome.devtools.inspectedWindow.tabId, function(tab) {
+export const addItemsToZipWriter = (zipWriter, items, eachDoneCallback, callback) => {
+  const item = items[0];
+  const rest = items.slice(1);
+
+  // if item exist so add it to zip
+  if (item) {
+    // Beautify here
+
+    // Check whether base64 encoding is valid
+    if (item.encoding === 'base64') {
+      // Try to decode first
+      try {
+        atob(item.content);
+      } catch (err) {
+        console.log(item.url, ' is not base64 encoding, try to encode to base64.');
+        try {
+          item.content = btoa(item.content);
+        } catch (err) {
+          console.log(item.url, ' failed to encode to base64, fallback to text.');
+          item.encoding = null;
+        }
+      }
+    }
+
+    // Create a reader of the content for zip
+    const resolvedContent =
+      item.encoding === 'base64'
+        ? new zip.Data64URIReader(item.content || '')
+        : new zip.TextReader(item.content || 'No Content: ' + item.url);
+
+    // Item has no content
+    // const isNoContent = !item.content;
+
+    // Make sure the file has some byte otherwise no import to avoid corrupted zip
+    if (resolvedContent.size > 0 || resolvedContent['blobReader']?.size > 0) {
+      zipWriter.add(item.saveAs.path, resolvedContent).finally(() => {
+        eachDoneCallback(item, true);
+        addItemsToZipWriter(zipWriter, rest, eachDoneCallback, callback);
+      });
+    } else {
+      // If no size, exclude the item
+      console.log('EXCLUDED: ', item.url);
+      eachDoneCallback(item, false);
+      // To the next item
+      addItemsToZipWriter(zipWriter, rest, eachDoneCallback, callback);
+    }
+  } else {
+    // Callback when all done
+    callback();
+  }
+  return rest;
+};
+
+export const downloadCompleteZip = (zipWriter, blobWriter, callback) => {
+  zipWriter.close();
+  blobWriter.getData().then((blob) => {
+    chrome.tabs.get(chrome.devtools.inspectedWindow.tabId, function (tab) {
       let url = new URL(tab.url);
       let filename = url.hostname ? url.hostname.replace(/([^A-Za-z0-9.])/g, '_') : 'all';
       let a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = filename + '.zip';
       a.click();
-      callback(true);
+      callback();
     });
   });
 };

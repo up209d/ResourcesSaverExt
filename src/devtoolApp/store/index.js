@@ -1,12 +1,16 @@
-import { useReducer, useMemo, createContext } from 'react';
+import { useReducer, useMemo, createContext, useContext } from 'react';
 import { appReducers, appInitialState } from './reducers';
 
-export const StoreContext = createContext(null);
+export const StoreContext = createContext({});
 
 export const useStore = () => {
+  return useContext(StoreContext);
+};
+
+export const useStoreConfigure = () => {
   const [state, dispatch] = useReducer(appReducers, appInitialState, () => appInitialState);
   const thunkDispatch = useMemo(
-    () => action => {
+    () => (action) => {
       if (typeof action === `function`) {
         return action(dispatch, () => state); // dispatch & getAllState
       } else {

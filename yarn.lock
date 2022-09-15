@@ -1802,6 +1802,11 @@
     "@types/node" "*"
     "@types/webidl-conversions" "*"
 
+"@zip.js/zip.js@^2.6.26":
+  version "2.6.26"
+  resolved "https://registry.yarnpkg.com/@zip.js/zip.js/-/zip.js-2.6.26.tgz#4c56ccd76f34d85101a0f273e9480bb147543fc2"
+  integrity sha512-XTkWmqfPKHI6by+vg3+MEh85/ooZuKHEfhJTFZkFq3rVnh/JPqMIH3ANv1LVfa7fc39cMG9s8DljIIGs4MI6fQ==
+
 abortcontroller-polyfill@^1.1.9:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/abortcontroller-polyfill/-/abortcontroller-polyfill-1.7.3.tgz#1b5b487bd6436b5b764fd52a612509702c3144b5"

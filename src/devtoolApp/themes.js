@@ -20,7 +20,7 @@ export const generateThemeConfig = (factor, baseShade) => {
     white: colors.white,
     black: colors.black,
     elasticBezier: `cubic-bezier(0.1, 0.71, 0.28, 1.14)`,
-    borderRadius: 3,
+    borderRadius: 5,
     background: baseShade,
     text: getShade(0.9, baseShade, factor),
     getShade: value => getShade(value, baseShade, factor),

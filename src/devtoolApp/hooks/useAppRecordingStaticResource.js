@@ -4,7 +4,7 @@ import * as staticResourceActions from '../store/staticResource';
 import useStore from '../store';
 
 export const useAppRecordingStaticResource = () => {
-  const [dispatch] = useStore();
+  const { dispatch } = useStore();
   useEffect(() => {
     //Get all resources that were already cached
     chrome.devtools.inspectedWindow.getResources((resources) => {

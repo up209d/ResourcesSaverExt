@@ -11,6 +11,7 @@ export const DownloadListHeader = styled.h2`
   flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
+  color: ${props => props.theme.text};
 `;
 
 export const DownloadListContainer = styled.div`
@@ -50,7 +51,7 @@ export const DownloadListItemWrapper = styled.div`
       : ``};
 
   ${ButtonWrapper} {
-    padding: 5px 10px;
+    padding: 10px 20px;
     font-size: 12px;
   }
 `;
@@ -90,6 +91,6 @@ export const AddButtonWrapper = styled.div`
   ${ButtonWrapper} {
   font-size: 12px;
     margin-right: 10px;
-    padding: 5px 10px;
+    padding: 10px 20px;
   }
 `;

@@ -9,7 +9,7 @@
   "author": "up209d <up209d@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "yarn cp && parcel watch ./src/*.html --dist-dir unpacked2x",
+    "dev": "yarn cp && parcel watch ./src/*.html --no-hmr --dist-dir unpacked2x",
     "dev-serve": "yarn cp && parcel ./src/*.html --port 20987 --dist-dir unpacked2x",
     "build": "yarn cp && parcel build ./src/*.html --dist-dir unpacked2x",
     "cp": "yarn clean && mkdir -p unpacked2x && cp -r ./src/static/* unpacked2x",
@@ -27,6 +27,7 @@
     "vendors/**/*"
   ],
   "dependencies": {
+    "@zip.js/zip.js": "^2.6.26",
     "app": "^0.1.0",
     "context": "^3.0.4",
     "global": "^4.4.0",
