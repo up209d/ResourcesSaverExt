@@ -1,0 +1,1 @@
+{"mappings":"AAAAA,OAAO,CAACC,GAAR,CAAY,gDAAZ,CAAAD,CAAAA;AAEAE,MAAM,CAACC,UAAP,GAAoB,EAApB,CAAAD","sources":["src/static/vendors/index.js"],"sourcesContent":["console.log('Self-maintaining global modules initialized!!!');\n\nwindow.vendorList = [];\n"],"names":["console","log","window","vendorList"],"version":3,"file":"devtool.app.3fc23375.js.map","sourceRoot":"../"}
