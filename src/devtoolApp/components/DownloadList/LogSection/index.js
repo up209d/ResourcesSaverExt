@@ -72,11 +72,14 @@ export const LogSection = (props) => {
         <LogSectionFilterInput value={filter} onChange={handleFilterChange} placeholder={`Enter filter keywords...`} />
       </LogSectionFilter>
       <LogSectionList>
-        {result[viewTab].map((i) => (
-          <LogSectionListItem key={i.url} bgColor={TABS_COLORS[viewTab]}>
-            {i.url}
-          </LogSectionListItem>
-        ))}
+        {result[viewTab].map((i) => {
+          const urlText = i.url?.length > 1024 ? `${i.url}...` : i.url;
+          return (
+            <LogSectionListItem key={i.url} bgColor={TABS_COLORS[viewTab]}>
+              {urlText}
+            </LogSectionListItem>
+          );
+        })}
       </LogSectionList>
     </LogSectionWrapper>
   );

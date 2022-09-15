@@ -53,7 +53,7 @@ export const DownloadList = () => {
           return (
             <React.Fragment key={item.url}>
               <DownloadListItemWrapper highlighted={item.url === tab.url} done={!!foundLog} logExpanded={logExpanded}>
-                <DownloadListItemUrl active={isSaving === item.url}>{String(item.url).slice(0, 128)}</DownloadListItemUrl>
+                <DownloadListItemUrl active={isSaving === item.url}>{item.url}</DownloadListItemUrl>
                 <DownloadListButtonGroup>
                   {!isSaving && foundLog && (
                     <Button color={`secondary`} onClick={handleLog(foundLog)}>
