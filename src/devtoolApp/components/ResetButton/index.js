@@ -5,6 +5,7 @@ const reloadWindow = () => window.location.reload(true);
 
 const ResetButton = ({ bgColor, color }) => (
   <ResetButtonWrapper bgColor={bgColor} onClick={reloadWindow}>
+    <div>Reset the app in case something stuck</div>
     <svg viewBox={'0 0 100 100'} xmlSpace={'preserve'}>
       <g>
         <g>
