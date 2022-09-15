@@ -53,15 +53,24 @@ https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablah
 - 0.0.1: Download all webpages by re-dowloading them from resource-urls.
 
 ### v1
-<img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot.png?raw=true" width="450" />
+<p align="center">
+    <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot.png?raw=true" width="450" />
+</p>
 
 ### v2
-<div>
+<p align="center">
     <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-dark.png?raw=true" width="300" />
+</p>
+<p align="center">
     <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-modal.png?raw=true" width="300" />
+</p>
+<p align="center">
     <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-report.png?raw=true" width="300" />
-</div>
+</p>
 
 ### Output results with same structure as online sources:
-<img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot2.png?raw=true" width="450" />
+<p align="center">
+    <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot2.png?raw=true" width="450" />
+</p>
+
 
