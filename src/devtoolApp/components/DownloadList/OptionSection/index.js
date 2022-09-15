@@ -9,6 +9,7 @@ export const OptionSection = () => {
     dispatch,
     state: {
       option: { ignoreNoContentFile, beautifyFile },
+      ui: { isSaving },
     },
   } = useStore();
 
@@ -22,10 +23,10 @@ export const OptionSection = () => {
 
   return (
     <OptionSectionWrapper>
-      <Toggle isToggled={ignoreNoContentFile} onToggle={handleIgnoreNoContentFile}>
+      <Toggle noInteraction={isSaving} isToggled={ignoreNoContentFile} onToggle={handleIgnoreNoContentFile}>
         Ignore "No Content" files
       </Toggle>
-      <Toggle isToggled={beautifyFile} onToggle={handleBeautifyFile}>
+      <Toggle noInteraction={isSaving} isToggled={beautifyFile} onToggle={handleBeautifyFile}>
         Beautify HTML, CSS, JS, JSON files
       </Toggle>
     </OptionSectionWrapper>

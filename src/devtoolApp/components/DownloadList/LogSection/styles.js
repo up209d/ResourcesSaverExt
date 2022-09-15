@@ -63,7 +63,8 @@ export const LogSectionListItem = styled.li`
   padding: 10px 20px 10px 10px;
   margin-bottom: 1px;
   font-size: 12px;
-  background-color: ${(props) => (props.bgColor ? rgba(props.theme[props.bgColor], 1) : props.theme.grayScale.gray9)};
+  transition: background-color 0.3s ease-out;
+  background-color: ${(props) => rgba(props.bgColor ? props.theme[props.bgColor] : props.theme.grayScale.gray9, 0.75)};
   color: ${(props) => props.theme.white};
   word-wrap: anywhere;
   &:first-child {
@@ -73,5 +74,8 @@ export const LogSectionListItem = styled.li`
   &:last-child {
     border-bottom-left-radius: ${(props) => props.theme.borderRadius}px;
     border-bottom-right-radius: ${(props) => props.theme.borderRadius}px;
+  }
+  &:hover {
+    background-color: ${(props) => rgba(props.bgColor ? props.theme[props.bgColor] : props.theme.grayScale.gray9, 1.0)};
   }
 `;

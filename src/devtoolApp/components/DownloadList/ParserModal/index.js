@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ParserModalWrapper, ParserModalBackdrop, ParserTextContainer, ParserTextButtonGroup, ParserTextArea } from './styles';
 import Button from 'devtoolApp/components/Button';
 import * as downloadListActions from 'devtoolApp/store/downloadList';
@@ -33,6 +33,13 @@ export const ParserModal = (props) => {
     },
     [textArea, dispatch]
   );
+
+  useEffect(() => {
+    if (!isOpen) {
+      setTextArea('');
+    }
+  }, [isOpen]);
+
   return (
     <ParserModalWrapper isOpen={isOpen}>
       <ParserModalBackdrop onClick={onClose} />

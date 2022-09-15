@@ -1,6 +1,8 @@
-import styled, { css } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 import { rgba } from 'polished';
 import { ButtonWrapper } from '../Button/styles';
+import { ImSpinner10 } from 'react-icons/im';
+import React from 'react';
 
 export const DownloadListWrapper = styled.div``;
 
@@ -101,4 +103,25 @@ export const AddButtonWrapper = styled.div`
     margin-right: 10px;
     padding: 10px 20px;
   }
+`;
+
+const SpinningAnimation = keyframes`
+ 0% { transform: rotate(0deg) }
+ 100% { transform: rotate(360deg) }
+`;
+
+export const Spinner = styled(({ className }) => {
+  return (
+    <div className={className}>
+      <ImSpinner10 size={28} />
+    </div>
+  );
+})`
+  animation: ${SpinningAnimation};
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-duration: 3s;
+  padding: 10px;
+  transform-origin: center center;
+  color: ${(props) => props.theme.grayScale.gray20};
 `;

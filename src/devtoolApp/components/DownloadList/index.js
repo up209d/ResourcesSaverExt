@@ -7,6 +7,7 @@ import {
   DownloadListWrapper,
   DownloadListItemUrl,
   DownloadListButtonGroup,
+  Spinner,
 } from './styles';
 import { useStore } from 'devtoolApp/store';
 import Button from '../Button';
@@ -65,11 +66,7 @@ export const DownloadList = () => {
                       <FaTrash />
                     </Button>
                   )}
-                  {isSaving && savingIndex === index && (
-                    <Button color={`primary`}>
-                      <MdDownloading size={18} />
-                    </Button>
-                  )}
+                  {isSaving && savingIndex === index && <Spinner />}
                 </DownloadListButtonGroup>
               </DownloadListItemWrapper>
               {logExpanded && <LogSection log={log} />}

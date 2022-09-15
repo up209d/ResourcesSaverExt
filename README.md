@@ -6,11 +6,11 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
-- 2.0.0: Time to make it right
+- 2.0.0: Refactor > Check `unpacked2x`
 
 ### Archived
 
-- 0.1.9: Add download list > Check unpacked1x
+- 0.1.9: Add download list > Check `unpacked1x`
 
 - 0.1.8: fixed zip file uncompressing with missing path issue in Window
 

@@ -35,7 +35,7 @@ export const ParserTextContainer = styled.div`
   left: calc(50% - 40vw);
   z-index: ${Z_INDEX + 2};
   box-sizing: border-box;
-  padding: 20px;
+  padding: 23px 20px 20px 20px;
   border-radius: ${(props) => props.theme.borderRadius * 2}px;
   background-color: ${(props) => props.theme.white};
   transform: translateY(-50px);

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   LogSectionFilter,
   LogSectionFilterInput,
@@ -25,6 +25,7 @@ export const LogSection = (props) => {
   const { log } = props;
   const [filter, setFilter] = useState(``);
   const [viewTab, setViewTab] = useState(LOG_TABS.SUCCESS);
+  const [toggleUrls, setToggleUrls] = useState({});
   const result = useMemo(() => {
     const { logs = [] } = log;
     return {
@@ -37,7 +38,16 @@ export const LogSection = (props) => {
   }, [log, filter]);
   const handleFilterChange = useMemo(() => (e) => setFilter(e.target.value), []);
 
-  const handleToggle = (currentViewTab) => () => setViewTab(currentViewTab);
+  const handleToggle = useCallback((currentViewTab) => () => setViewTab(currentViewTab), []);
+  const handleToggleUrls = useCallback(
+    (url) => () =>
+      setToggleUrls((urls) => ({
+        ...urls,
+        [url]: !urls[url],
+      })),
+    []
+  );
+
   return (
     <LogSectionWrapper>
       <LogSectionTitle>Download log</LogSectionTitle>
@@ -73,10 +83,11 @@ export const LogSection = (props) => {
       </LogSectionFilter>
       <LogSectionList>
         {result[viewTab].map((i) => {
-          const urlText = i.url?.length > 1024 ? `${i.url}...` : i.url;
+          const urlText = i.url?.length > 256 ? `${i.url.slice(0, 253)}...` : i.url;
+          const toggled = !!toggleUrls[i.url];
           return (
-            <LogSectionListItem key={i.url} bgColor={TABS_COLORS[viewTab]}>
-              {urlText}
+            <LogSectionListItem key={i.url} bgColor={TABS_COLORS[viewTab]} onClick={handleToggleUrls(i.url)}>
+              {toggled ? i.url : urlText}
             </LogSectionListItem>
           );
         })}
