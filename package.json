@@ -7,7 +7,7 @@
   ],
   "repository": "git@github.com:up209d/ResourcesSaverExt.git",
   "author": "up209d <up209d@gmail.com>",
-  "license": "MIT",
+  "license": "GPLv3",
   "scripts": {
     "dev": "yarn cp && parcel watch ./src/*.html --no-hmr --dist-dir unpacked2x",
     "dev-serve": "yarn cp && parcel ./src/*.html --port 20987 --dist-dir unpacked2x",
