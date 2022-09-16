@@ -6,7 +6,7 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
-- 2.0.0: Refactor > Check `unpacked2x`
+- 2.0.1: Refactor > Check `unpacked2x`
 
 ### Archived
 

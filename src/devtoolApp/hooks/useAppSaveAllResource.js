@@ -25,7 +25,7 @@ export const useAppSaveAllResource = () => {
       dispatch(uiActions.setSavingIndex(i));
       await new Promise(async (resolve) => {
         let loaded = true;
-        if (i > 0) {
+        if (i > 0 || tab?.url !== downloadItem.url) {
           loaded = await new Promise((r) => {
             const tabChangeHandler = (tabId, changeInfo) => {
               if (tabId !== chrome.devtools.inspectedWindow.tabId || !changeInfo || !changeInfo.status) {
