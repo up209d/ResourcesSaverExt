@@ -1,13 +1,15 @@
 {
   "name": "Save All Resources",
   "version": "2.0.0",
-  "description": "UP - Save all resources files with retaining folder structure.",
+  "description": "Save all resources files with retaining folder structure.",
+  "author": "up209d",
+  "homepage_url": "https://github.com/up209d/ResourcesSaverExt",
   "icons": {
     "128": "icon.gif"
   },
   "action": {
     "default_icon": "icon.gif",
-    "default_title": "UP",
+    "default_title": "Save All Resources",
     "default_popup": "popup.html"
   },
   "background": {
@@ -15,7 +17,7 @@
     "type": "module"
   },
   "permissions": ["tabs", "downloads", "downloads.shelf", "scripting"],
-  "host_permissions": ["http://localhost:1234/*", "http://*/", "https://*/"],
+  "host_permissions": ["http://*/", "https://*/"],
   "optional_host_permissions": ["*://*/*"],
   "devtools_page": "devtool.html",
   "manifest_version": 3
