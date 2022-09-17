@@ -1,28 +1,24 @@
 {
 	"name": "Save All Resources",
 	"version": "0.1.9",
-	"description": "UP - Save all resources files with retaining folder structure.",
+	"description": "Save all resources files with retaining folder structure.",
+	"author": "up209d",
+	"homepage_url": "https://github.com/up209d/ResourcesSaverExt",
 	"icons": {
-    "128": "icon.gif"
+		"128": "icon.gif"
 	},
-	"browser_action": {
-    "default_icon": "icon.gif",
-		"default_title": "UP",
+	"action": {
+		"default_icon": "icon.gif",
+		"default_title": "Save All Resources",
 		"default_popup": "popup.html"
-  },
+	},
 	"background": {
-		"scripts": [
-			"background.js"
-		]
-  },
-	"permissions": [
-		"tabs",
-		"http://*/",
-    "https://*/",
-		"*://*/*",
-		"downloads",
-		"downloads.shelf"
-	],
+		"service_worker": "background.js",
+		"type": "module"
+	},
+	"permissions": ["tabs", "downloads", "downloads.shelf", "scripting"],
+	"host_permissions": ["http://*/", "https://*/"],
+	"optional_host_permissions": ["*://*/*"],
 	"devtools_page": "devtool.html",
-	"manifest_version": 2
+	"manifest_version": 3
 }
