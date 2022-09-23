@@ -46,7 +46,7 @@ export const processStaticResourceToStore = (dispatch, res) => {
   // logIfDev('[STATIC] Resource: ', res);
   if (!res.url.match(`^(debugger:|chrome-extension:|ws:)`)) {
     flashStatusDebounced(dispatch, `[STATIC] Processing a resource: ${res.url || `No Url`}`);
-    res.getContent((content, encoding) => {
+    res.getContent(async (content, encoding) => {
       const meta = {
         source: SOURCES.STATIC,
         url: res.url,
@@ -56,19 +56,28 @@ export const processStaticResourceToStore = (dispatch, res) => {
         origin: res,
         saveAs: resolveURLToPath(res.url, res.type, content),
       };
-      if (!content) {
+      // If content is a promise
+      if (content?.then) {
+        try {
+          meta.content = await content;
+        } catch {
+          meta.content = null;
+          meta.failed = true;
+        }
+      }
+      if (!meta.content && res.url.startsWith('http')) {
         console.debug(`[STATIC] ${res.url} No content from memory, try to fetch content directly: `, res.url);
         fetch(res.url)
-          .then((retryRequest) => {
+          .then(async (retryRequest) => {
             if (retryRequest.ok) {
-              meta.content = retryRequest.blob();
+              meta.content = await retryRequest.blob();
             } else {
               meta.failed = true;
             }
             dispatch(staticResourceActions.addStaticResource(meta));
           })
           .catch((err) => {
-            console.error(`[STATIC]: ${res.url}`, err);
+            console.log(`[STATIC]: Error ${res.url}`, err);
             meta.failed = true;
             dispatch(staticResourceActions.addStaticResource(meta));
           });

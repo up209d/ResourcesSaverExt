@@ -1,6 +1,6 @@
 {
   "name": "resources-saver-extension",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Chrome extension for one click downloading all resources!",
   "browserslist": [
     "> 0.5%, last 2 versions, not dead"

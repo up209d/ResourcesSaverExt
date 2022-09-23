@@ -54,6 +54,7 @@ export const useAppSaveAllResource = () => {
           ...(networkResourceRef.current || []),
           ...(staticResourceRef.current || []),
         ]);
+        console.log(toDownload.filter(t => typeof t?.content !== 'string' && !!t?.content?.then));
         if (loaded && toDownload.length) {
           downloadZipFile(
             toDownload,

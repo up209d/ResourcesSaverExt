@@ -1,6 +1,6 @@
 {
   "name": "Save All Resources",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Save all resources files with retaining folder structure.",
   "author": "up209d",
   "homepage_url": "https://github.com/up209d/ResourcesSaverExt",
@@ -16,7 +16,7 @@
     "service_worker": "background.js",
     "type": "module"
   },
-  "permissions": ["tabs", "downloads", "downloads.shelf", "scripting"],
+  "permissions": ["tabs", "downloads", "downloads.shelf"],
   "host_permissions": ["http://*/", "https://*/"],
   "optional_host_permissions": ["*://*/*"],
   "devtools_page": "devtool.html",

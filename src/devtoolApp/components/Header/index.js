@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { withTheme } from 'styled-components';
 import { HeaderWrapper } from './styles';
 import ResetButton from 'devtoolApp/components/ResetButton';
@@ -14,6 +14,14 @@ export const Header = (props) => {
     ui: { status, isSaving },
   } = state;
   const { handleOnSave } = useAppSaveAllResource();
+
+  const saveText = useMemo(() => {
+    if (status !== UI_INITIAL_STATE.status) {
+      return 'Processing resources...';
+    }
+    return isSaving ? `Saving all resource...` : `Save All Resources`;
+  }, [status, isSaving]);
+
   return (
     <HeaderWrapper>
       <div>
@@ -22,7 +30,7 @@ export const Header = (props) => {
         <ResetButton color={props.theme.white} bgColor={props.theme.danger} />
       </div>
       <Button onClick={handleOnSave} disabled={status !== UI_INITIAL_STATE.status || isSaving}>
-        {isSaving ? `Saving all resource...` : `Save All Resources`}
+        {saveText}
       </Button>
     </HeaderWrapper>
   );

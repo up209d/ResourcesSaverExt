@@ -201,6 +201,17 @@ export const downloadZipFile = (toDownload, options, eachDoneCallback, callback)
   );
 };
 
+// Create a reader of the content for zip
+export const getContentRead = (item) => {
+  if (item.encoding === 'base64') {
+    return new zip.Data64URIReader(item.content || 'No Content: ' + item.url);
+  }
+  if (item.content instanceof Blob) {
+    return new zip.BlobReader(item.content);
+  }
+  return new zip.TextReader(item.content || 'No Content: ' + item.url);
+};
+
 export const addItemsToZipWriter = (zipWriter, items, options, eachDoneCallback, callback) => {
   const item = items[0];
   const rest = items.slice(1);
@@ -255,10 +266,7 @@ export const addItemsToZipWriter = (zipWriter, items, options, eachDoneCallback,
     }
 
     // Create a reader of the content for zip
-    const resolvedContent =
-      item.encoding === 'base64'
-        ? new zip.Data64URIReader(item.content || '')
-        : new zip.TextReader(item.content || 'No Content: ' + item.url);
+    const resolvedContent = getContentRead(item);
 
     // Item has no content
     const isNoContent = !item.content;
