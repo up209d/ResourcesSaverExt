@@ -6,7 +6,7 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
-- 2.0.3: Add version switcher (including legacy versions such as 0.1.8 0.1.9)
+- **2.0.3: Add version switcher (including legacy versions such as 0.1.8 0.1.9)**
 
 - 2.0.2: Bug fixes for blob content promise
 
@@ -14,9 +14,9 @@ https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablah
 
 ### Archived
 
-- 0.1.9: Add download list > Check `unpacked1x`
+- **0.1.9: Add download list > Check `unpacked1x`**
 
-- 0.1.8: fixed zip file uncompressing with missing path issue in Window
+- **0.1.8: fixed zip file uncompressing with missing path issue in Window**
 
 - 0.1.7: fixed Url to Path converting bug
 
