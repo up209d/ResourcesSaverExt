@@ -323,3 +323,31 @@ a:hover {
 .failed {
   color: red;
 }
+
+.switch-version-title {
+  margin-top: 20px;
+  font-size: 16px;
+}
+.switch-version-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: stretch;
+}
+
+.switch-version-btn {
+  margin: 5px 10px 5px 0;
+  background-color: #eeeeee;
+  transition: all 0.3s ease-out;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.switch-version-btn:hover {
+  background-color: #dddddd;
+}
+
+.switch-version-btn.active {
+  background-color: green;
+  color: white;
+}

@@ -6,6 +6,8 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
+- 2.0.3: Add version switcher (including legacy versions such as 0.1.8 0.1.9)
+
 - 2.0.2: Bug fixes for blob content promise
 
 - 2.0.1: Refactor > Check `unpacked2x`
@@ -53,6 +55,11 @@ https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablah
 - 0.0.2: Extension now re-fetchs resource contents from browser-cache in order to improve speed & stability.
 
 - 0.0.1: Download all webpages by re-dowloading them from resource-urls.
+
+### Switch version
+<p align="center">
+    <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-switch-version.png?raw=true" width="300" />
+</p>
 
 ### v1
 <p align="center">
