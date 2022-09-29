@@ -9,8 +9,10 @@ const handleSwitchVersion = (version) => {
     localStorage.setItem('resources-saver-version', '0.1.9');
     return document.getElementById('switch-version-1-9').setAttribute('class', 'switch-version-btn active');
   }
-  localStorage.setItem('resources-saver-version', '2');
-  return document.getElementById('switch-version-2').setAttribute('class', 'switch-version-btn active');
+  if (version === '2') {
+    localStorage.setItem('resources-saver-version', '2');
+    return document.getElementById('switch-version-2').setAttribute('class', 'switch-version-btn active');
+  }
 };
 
 window.onload = () => {
@@ -28,13 +30,13 @@ window.onload = () => {
 
   const version = localStorage.getItem('resources-saver-version');
 
-  if (version === '0.1.8') {
-    return document.getElementById('switch-version-1-8').setAttribute('class', 'switch-version-btn active');
+  if (version === '2') {
+    return document.getElementById('switch-version-2').setAttribute('class', 'switch-version-btn active');
   }
 
   if (version === '0.1.9') {
     return document.getElementById('switch-version-1-9').setAttribute('class', 'switch-version-btn active');
   }
 
-  return document.getElementById('switch-version-2').setAttribute('class', 'switch-version-btn active');
+  return document.getElementById('switch-version-1-8').setAttribute('class', 'switch-version-btn active');
 };

@@ -1,6 +1,6 @@
 {
   "name": "resources-saver-extension",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Chrome extension for one click downloading all resources!",
   "browserslist": [
     "> 0.5%, last 2 versions, not dead"
@@ -13,7 +13,7 @@
     "dev-serve": "yarn cp && parcel ./src/*.html --port 20987 --dist-dir unpacked2x",
     "build": "yarn cp && parcel build ./src/*.html --dist-dir unpacked2x",
     "cp": "yarn clean && mkdir -p unpacked2x && cp -r ./src/static/* unpacked2x",
-    "clean": "rm -rf dist && rm -rf unpacked2x",
+    "clean": "rm -rf .parcel-cache && rm -rf dist && rm -rf unpacked2x",
     "reset": "yarn clean && rm -rf ./.cache && rm -rf ./.parcel-cache",
     "local": "rm -rf ./node_modules/parcel-plugin-local && yarn install --check-files && yarn reset",
     "prettier": "yarn prettier"

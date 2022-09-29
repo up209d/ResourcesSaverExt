@@ -6,6 +6,8 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
+- 2.0.4: Incognito mode quick fix
+
 - **2.0.3: Add version switcher (including legacy versions such as 0.1.8 0.1.9)**
 
 - 2.0.2: Bug fixes for blob content promise
