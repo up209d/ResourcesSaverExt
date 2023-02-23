@@ -2,6 +2,10 @@
 
 ### Chrome Extension for one click downloading all resources files and keeping folder structures.
 
+--------------------------------------------------------------------------------------------------
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/up209d)
+
 Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
@@ -84,4 +88,5 @@ https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablah
     <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot2.png?raw=true" width="450" />
 </p>
 
-
+--------------------------------------------------------------------------------------------------
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/up209d)
