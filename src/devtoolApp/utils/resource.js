@@ -1,7 +1,7 @@
 import * as networkResourceActions from 'devtoolApp/store/networkResource';
 import * as staticResourceActions from 'devtoolApp/store/staticResource';
 import { flashStatus } from 'devtoolApp/store/ui';
-import { resolveURLToPath } from './file';
+import { resolveURLToPath } from './url';
 import { debounce, logIfDev } from './general';
 import * as downloadLogActions from '../store/downloadLog';
 

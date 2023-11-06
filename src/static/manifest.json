@@ -1,14 +1,14 @@
 {
   "name": "Save All Resources",
-  "version": "2.0.4",
+  "version": "2.0.6",
   "description": "Save all resources files with retaining folder structure.",
   "author": "up209d",
   "homepage_url": "https://github.com/up209d/ResourcesSaverExt",
   "icons": {
-    "128": "icon.gif"
+    "128": "icon.png"
   },
   "action": {
-    "default_icon": "icon.gif",
+    "default_icon": "icon.png",
     "default_title": "Save All Resources",
     "default_popup": "popup.html"
   },

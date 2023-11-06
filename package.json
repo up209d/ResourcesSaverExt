@@ -1,6 +1,6 @@
 {
   "name": "resources-saver-extension",
-  "version": "2.0.4",
+  "version": "2.0.6",
   "description": "Chrome extension for one click downloading all resources!",
   "browserslist": [
     "> 0.5%, last 2 versions, not dead"
@@ -16,6 +16,7 @@
     "clean": "rm -rf .parcel-cache && rm -rf dist && rm -rf unpacked2x",
     "reset": "yarn clean && rm -rf ./.cache && rm -rf ./.parcel-cache",
     "local": "rm -rf ./node_modules/parcel-plugin-local && yarn install --check-files && yarn reset",
+    "auto": "rm -rf output && babel-node auto.js --presets @babel/preset-env",
     "prettier": "yarn prettier"
   },
   "alias": {
@@ -44,6 +45,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",
+    "@babel/node": "^7.22.19",
     "@babel/preset-env": "^7.19.1",
     "@babel/preset-react": "^7.18.6",
     "@parcel/config-default": "^2.7.0",
@@ -52,6 +54,7 @@
     "@parcel/transformer-sass": "^2.7.0",
     "parcel": "^2.7.0",
     "parcel-namer-resource-saver": "file:./plugins/parcel-namer-resource-saver",
+    "puppeteer": "^21.3.8",
     "sass": "^1.54.9"
   }
 }

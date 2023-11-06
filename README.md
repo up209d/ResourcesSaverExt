@@ -10,6 +10,10 @@ Extension can be found here:
 
 https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
 
+- 2.0.6: Update icon
+
+- 2.0.5: Bug fixes
+
 - 2.0.4: Incognito mode quick fix
 
 - **2.0.3: Add version switcher (including legacy versions such as 0.1.8 0.1.9)**
@@ -63,29 +67,29 @@ https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablah
 - 0.0.1: Download all webpages by re-dowloading them from resource-urls.
 
 ### Switch version
-<p align="center">
-    <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-switch-version.png?raw=true" width="300" />
+<p style="text-align: center;">
+    <img alt="switch-version" src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-switch-version.png?raw=true" width="300" />
 </p>
 
 ### v1
-<p align="center">
-    <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot.png?raw=true" width="450" />
+<p style="text-align: center;">
+    <img alt="v1" src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot.png?raw=true" width="450" />
 </p>
 
 ### v2
-<p align="center">
-    <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-dark.png?raw=true" width="300" />
+<p style="text-align: center;">
+    <img alt="v2-dark" src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-dark.png?raw=true" width="300" />
 </p>
-<p align="center">
-    <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-modal.png?raw=true" width="300" />
+<p style="text-align: center;">
+    <img alt="v2-modal" src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-modal.png?raw=true" width="300" />
 </p>
-<p align="center">
-    <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-report.png?raw=true" width="300" />
+<p style="text-align: center;">
+    <img alt="v2-report" src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot-2-report.png?raw=true" width="300" />
 </p>
 
 ### Output results with same structure as online sources:
-<p align="center">
-    <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot2.png?raw=true" width="450" />
+<p style="text-align: center;">
+    <img alt="v2-results" src="https://github.com/up209d/ResourcesSaverExt/blob/master/screenshot2.png?raw=true" width="450" />
 </p>
 
 --------------------------------------------------------------------------------------------------
