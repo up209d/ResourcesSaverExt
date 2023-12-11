@@ -6,9 +6,10 @@
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/up209d)
 
-Extension can be found here:
+### How to use:
+To use load extension from `unpacked2x` folder as local package
 
-https://chrome.google.com/webstore/detail/save-all-resources/abpdnfjocnmdomablahdcfnoggeeiedb?hl=en-US
+### Updates:
 
 - 2.0.6: Update icon
 
