@@ -7,7 +7,7 @@
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/up209d)
 
 ### How to use:
-To use load extension from `unpacked2x` folder as local package
+Load extension from `unpacked2x` folder as local package in Chrome > Manage Extensions
 
 ### Updates:
 
