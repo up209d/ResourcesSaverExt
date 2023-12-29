@@ -28,4 +28,10 @@ Project will be built output to `unpacked2x`
 
 ### How to use:
 
-After successful build, load extension from `unpacked2x` folder as local package in `Chrome > Manage Extensions`
+After successful build, load extension from `unpacked2x` folder as local package.
+
+`Chrome > Extensions > Manage Extensions`
+
+<p>
+    <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/guide.png?raw=true" alt="load-local-extension" />
+</p>
