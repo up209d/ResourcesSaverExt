@@ -16,6 +16,12 @@ Load extension from `unpacked2x` folder as local package.
     <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/guide.png?raw=true" alt="load-local-extension" />
 </p>
 
+Click `Load unpacked` button and select the `unpacked2x` directory
+
+<p>
+    <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/select-unpacked2x-directory.png?raw=true" alt="select-unpacked2x-directory" />
+</p>
+
 Open Chrome `DevTool` Panel > Choose `ResourceSaver` Tab
 
 <p>
