@@ -33,6 +33,7 @@
     "context": "^3.0.4",
     "global": "^4.4.0",
     "lodash": "^4.17.21",
+    "minimatch": "^10.0.3",
     "polished": "^4.2.2",
     "prettier": "^2.7.1",
     "react": "^18.2.0",

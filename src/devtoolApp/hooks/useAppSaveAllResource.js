@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import * as uiActions from '../store/ui';
 import { downloadZipFile, resolveDuplicatedResources } from '../utils/file';
 import { logResourceByUrl } from '../utils/resource';
+import { globMatch } from '../utils/general';
 import { resetNetworkResource } from '../store/networkResource';
 import { resetStaticResource } from '../store/staticResource';
 import { INITIAL_STATE as UI_INITIAL_STATE } from '../store/ui';
@@ -14,7 +15,7 @@ export const useAppSaveAllResource = () => {
   const staticResourceRef = useRef(staticResource);
   const {
     downloadList,
-    option: { ignoreNoContentFile, beautifyFile },
+    option: { ignoreNoContentFile, beautifyFile, urlFilter },
     ui: { tab },
   } = state;
 
@@ -54,16 +55,20 @@ export const useAppSaveAllResource = () => {
           ...(networkResourceRef.current || []),
           ...(staticResourceRef.current || []),
         ]);
-        console.log(toDownload.filter(t => typeof t?.content !== 'string' && !!t?.content?.then));
-        if (loaded && toDownload.length) {
+
+        // Apply URL filter if specified
+        const filteredToDownload = urlFilter ? toDownload.filter((resource) => globMatch(urlFilter, resource.url)) : toDownload;
+
+        console.log(toDownload.filter((t) => typeof t?.content !== 'string' && !!t?.content?.then));
+        if (loaded && filteredToDownload.length) {
           downloadZipFile(
-            toDownload,
+            filteredToDownload,
             { ignoreNoContentFile, beautifyFile },
             (item, isDone) => {
               dispatch(uiActions.setStatus(`Compressed: ${item.url} Processed: ${isDone}`));
             },
             () => {
-              logResourceByUrl(dispatch, downloadItem.url, toDownload);
+              logResourceByUrl(dispatch, downloadItem.url, filteredToDownload);
               if (i + 1 !== downloadList.length) {
                 dispatch(resetNetworkResource());
                 dispatch(resetStaticResource());

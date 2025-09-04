@@ -73,7 +73,7 @@ export const getContentRead = (item) => {
 export const addItemsToZipWriter = (zipWriter, items, options, eachDoneCallback, callback) => {
   const item = items[0];
   const rest = items.slice(1);
-
+  // console.log(item);
   // if item exist so add it to zip
   if (item) {
     // Beautify here
