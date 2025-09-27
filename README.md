@@ -16,6 +16,8 @@ Load extension from `unpacked2x` folder as local package.
     <img src="https://github.com/up209d/ResourcesSaverExt/blob/master/guide.png?raw=true" alt="load-local-extension" />
 </p>
 
+Make sure the `Developer mode` toggle is active.
+
 Click `Load unpacked` button and select the `unpacked2x` directory
 
 <p>
